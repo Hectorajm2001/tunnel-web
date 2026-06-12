@@ -63,3 +63,15 @@
   background: var(--accent-secondary);
   border-radius: 2px;
 }
+
+@media (max-width: 600px) {
+  .nav-container {
+    padding: 0 1rem;
+  }
+  .nav-brand .brand-text {
+    display: none;
+  }
+  .nav-links {
+    gap: 1rem;
+  }
+}

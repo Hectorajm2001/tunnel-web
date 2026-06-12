@@ -77,10 +77,6 @@ const Portal = () => {
     <div className="portal-page" ref={container}>
       <div className="container">
         <header className="portal-header">
-          <div className="security-badge glass-panel">
-            <Shield size={16} className="shield-icon" />
-            <span>Secured via Cloudflare Zero Trust</span>
-          </div>
           <h1 className="portal-title"><Terminal className="brand-icon" size={48} /> Hector<span className="text-gradient">AJM</span></h1>
           <p className="portal-subtitle">Access your internal infrastructure and services securely.</p>
         </header>
