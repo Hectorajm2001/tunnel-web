@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Shield, Server, HardDrive, Network, Lock, Monitor, Cpu } from 'lucide-react';
+import { Shield, Server, HardDrive, Network, Lock, Monitor, Cpu, Music, Film } from 'lucide-react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 
@@ -37,6 +37,22 @@ const services = [
     url: 'https://grafana.hectorajm.dpdns.org',
     icon: <Monitor size={28} />,
     color: '#f05a28',
+    status: 'online'
+  },
+  {
+    name: 'SwingMusic',
+    description: 'Personal Music Server',
+    url: 'https://swingmusic.hectorajm.dpdns.org',
+    icon: <Music size={28} />,
+    color: '#9c27b0', // Purple color
+    status: 'online'
+  },
+  {
+    name: 'Jellyfin',
+    description: 'Media Streaming Server',
+    url: 'https://jellyfin.hectorajm.dpdns.org',
+    icon: <Film size={28} />,
+    color: '#00a4dc', // Jellyfin blue
     status: 'online'
   }
 ];
