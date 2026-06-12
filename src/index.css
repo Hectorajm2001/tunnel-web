@@ -20,8 +20,7 @@
 
 body {
   font-family: 'Inter', sans-serif;
-  background: var(--bg-gradient);
-  background-attachment: fixed;
+  background: transparent; /* Fallback: var(--bg-gradient) */
   color: var(--text-primary);
   min-height: 100vh;
   overflow-x: hidden;

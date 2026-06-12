@@ -3,12 +3,14 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Portfolio from './pages/Portfolio';
 import Portal from './pages/Portal';
+import ShaderBackground from './components/ShaderBackground';
 import './index.css';
 
 function App() {
   return (
     <Router>
       <div className="app-container">
+        <ShaderBackground />
         <Navbar />
         <main>
           <Routes>
