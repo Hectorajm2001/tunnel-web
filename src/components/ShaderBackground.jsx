@@ -22,33 +22,58 @@ const ShaderBackground = () => {
       precision highp float;
       uniform vec2 u_resolution;
       uniform vec2 u_mouse;
+      uniform float u_time;
+
+      float random(in vec2 st) {
+          return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+      }
+
+      float noise(in vec2 st) {
+          vec2 i = floor(st);
+          vec2 f = fract(st);
+          float a = random(i);
+          float b = random(i + vec2(1.0, 0.0));
+          float c = random(i + vec2(0.0, 1.0));
+          float d = random(i + vec2(1.0, 1.0));
+          vec2 u = f * f * (3.0 - 2.0 * f);
+          return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+      }
 
       void main() {
         vec2 st = gl_FragCoord.xy / u_resolution.xy;
+        st.x *= u_resolution.x / u_resolution.y;
         
-        // Aspect ratio correction so the glow is a perfect circle
-        vec2 st_aspect = st;
-        st_aspect.x *= u_resolution.x / u_resolution.y;
+        vec2 mouse = u_mouse / u_resolution.xy;
+        mouse.x *= u_resolution.x / u_resolution.y;
 
-        vec2 mouse_aspect = u_mouse / u_resolution.xy;
-        mouse_aspect.x *= u_resolution.x / u_resolution.y;
+        // Fluid distortion
+        vec2 pos = st * 3.0;
+        float n = noise(pos + u_time * 0.2);
+        pos += vec2(n * 0.5, noise(pos + vec2(100.0) - u_time * 0.3) * 0.5);
+        float n2 = noise(pos * 2.0 - u_time * 0.5);
         
-        // Calculate distance from current pixel to the mouse
-        float dist = length(st_aspect - mouse_aspect);
-        
-        // Intensity of the glow (0.0 to 1.0). Fades out at 0.8 units.
-        float intensity = smoothstep(0.8, 0.0, dist) * 0.6;
-        
+        // Mouse interaction
+        float dist = length(st - mouse);
+        vec2 dir = normalize(st - mouse);
+        float mousePush = exp(-dist * 5.0) * 0.5;
+        pos += dir * mousePush * sin(u_time * 2.0 - dist * 10.0);
+
+        // Flow intensity
+        float flow = noise(pos * 1.5 + u_time * 0.1) * n2;
+        float glow = smoothstep(0.8, 0.0, dist) * 0.5;
+
         // Colors
-        vec3 bgColor = vec3(0.01, 0.02, 0.05); // Very dark slate/blue
-        vec3 glowColor = vec3(0.3, 0.1, 0.6); // Purple/Blue premium glow
+        vec3 bgColor = vec3(0.01, 0.02, 0.05);
+        vec3 fluidColor1 = vec3(0.1, 0.3, 0.7);
+        vec3 fluidColor2 = vec3(0.4, 0.1, 0.6);
         
-        // Add glow to background
-        vec3 color = bgColor + (glowColor * intensity);
+        vec3 color = mix(bgColor, fluidColor1, flow * 0.6);
+        color = mix(color, fluidColor2, flow * glow * 3.0);
+        color += fluidColor2 * glow * 0.8;
         
-        // Add extremely subtle film grain to prevent color banding
-        float grain = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
-        color += (grain - 0.5) * 0.02;
+        // Grain
+        float grain = random(gl_FragCoord.xy + u_time) * 0.03;
+        color += grain - 0.015;
 
         gl_FragColor = vec4(color, 1.0);
       }
