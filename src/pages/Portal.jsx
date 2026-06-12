@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Shield, Server, HardDrive, Network, Lock, Monitor, Cpu, Music, Film } from 'lucide-react';
+import { Shield, Server, HardDrive, Network, Lock, Monitor, Cpu, Music, Film, Terminal } from 'lucide-react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 
@@ -81,7 +81,7 @@ const Portal = () => {
             <Shield size={16} className="shield-icon" />
             <span>Secured via Cloudflare Zero Trust</span>
           </div>
-          <h1 className="portal-title">Homelab <span className="text-gradient">Portal</span></h1>
+          <h1 className="portal-title"><Terminal className="brand-icon" size={48} /> Hector<span className="text-gradient">AJM</span></h1>
           <p className="portal-subtitle">Access your internal infrastructure and services securely.</p>
         </header>
 
