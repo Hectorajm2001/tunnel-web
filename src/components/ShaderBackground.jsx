@@ -11,7 +11,7 @@ const ShaderBackground = () => {
     // Initialize WebGL Fluid Simulation
     // Using custom colors to match the Homelab portal theme (slate/dark blue and purple/cyan)
     fluid(canvas, {
-      IMMEDIATE: true, // Trigger immediate fluid burst on load
+      IMMEDIATE: false, // Prevent the explosion on load
       TRIGGER: 'hover', // Can be 'click' or 'hover'
       SIM_RESOLUTION: 128,
       DYE_RESOLUTION: 1024,
