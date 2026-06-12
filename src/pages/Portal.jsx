@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Shield, Server, HardDrive, Network, Lock, Monitor, Cpu } from 'lucide-react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
@@ -43,6 +43,25 @@ const services = [
 
 const Portal = () => {
   const container = useRef(null);
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('https://api.hectorajm.dpdns.org/api/stats');
+        if (response.ok) {
+          const data = await response.json();
+          setStats(data);
+        }
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      }
+    };
+    
+    fetchStats();
+    const interval = setInterval(fetchStats, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   useGSAP(() => {
     const tl = gsap.timeline();
@@ -77,17 +96,35 @@ const Portal = () => {
         <div className="system-status glass-panel">
           <div className="status-item">
             <Cpu size={24} className="status-icon text-gradient" />
-            <div>
-              <p className="status-label">Server Status</p>
-              <p className="status-value">All Systems Operational</p>
+            <div style={{ flex: 1 }}>
+              <div className="stat-header">
+                <p className="status-label">CPU</p>
+                <p className="status-value">{stats ? `${stats.cpu}%` : '...'}</p>
+              </div>
+              <div className="stat-bar-bg">
+                <div className="stat-bar-fill" style={{ width: `${stats ? stats.cpu : 0}%`, background: 'var(--accent-primary)' }}></div>
+              </div>
+            </div>
+          </div>
+          <div className="status-divider"></div>
+          <div className="status-item">
+            <HardDrive size={24} className="status-icon text-gradient" />
+            <div style={{ flex: 1 }}>
+              <div className="stat-header">
+                <p className="status-label">RAM</p>
+                <p className="status-value">{stats ? `${stats.ram}%` : '...'}</p>
+              </div>
+              <div className="stat-bar-bg">
+                <div className="stat-bar-fill" style={{ width: `${stats ? stats.ram : 0}%`, background: 'var(--accent-secondary)' }}></div>
+              </div>
             </div>
           </div>
           <div className="status-divider"></div>
           <div className="status-item">
             <Lock size={24} className="status-icon text-gradient" />
             <div>
-              <p className="status-label">Tunnel Status</p>
-              <p className="status-value active-status">Connected</p>
+              <p className="status-label">Uptime</p>
+              <p className="status-value active-status" style={{ fontSize: '1rem' }}>{stats ? stats.uptime : '...'}</p>
             </div>
           </div>
         </div>
