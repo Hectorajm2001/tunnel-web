@@ -96,8 +96,8 @@ const Portfolio = () => {
             <pre className="code-content">
               <code>
                 <span className="keyword">const</span> <span className="variable">developer</span> = {'{'}
-                <br />  <span className="property">name</span>: <span className="string">'Hector'</span>,
-                <br />  <span className="property">skills</span>: [<span className="string">'React'</span>, <span className="string">'Node.js'</span>, <span className="string">'Linux'</span>],
+                <br />  <span className="property">name</span>: <span className="string">'Hector Jaramillo Montantes'</span>,
+                <br />  <span className="property">skills</span>: [<span className="string">'C#'</span>, <span className="string">'Java'</span>, <span className="string">'AI & Fine-tuning'</span>, <span className="string">'Web & Android'</span>, <span className="string">'Unity'</span>, <span className="string">'Unreal'</span>],
                 <br />  <span className="property">status</span>: <span className="string">'Building awesome things'</span>
                 <br />{'}'};
               </code>
