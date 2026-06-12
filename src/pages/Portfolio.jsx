@@ -9,25 +9,32 @@ import './Portfolio.css';
 
 const projects = [
   {
-    title: 'Homelab Infrastructure',
-    description: 'A complete self-hosted environment using Proxmox, Docker, and Cloudflare Tunnels for secure access.',
+    title: 'SentinelOps',
+    description: 'A multi-agent system that detects, investigates, and generates responses to cybersecurity incidents in real time.',
+    icon: <Database size={32} className="project-icon" />,
+    tech: ['Python', 'AI Agents', 'Cybersecurity'],
+    link: 'https://github.com/Hectorajm2001/SentinelOps'
+  },
+  {
+    title: 'Escaner-wifi',
+    description: 'WiFi DensePose turns commodity WiFi signals into real-time human pose estimation and presence detection.',
     icon: <Server size={32} className="project-icon" />,
-    tech: ['Proxmox', 'Docker', 'Linux', 'Networking'],
-    link: '#'
+    tech: ['Rust', 'WiFi Sensing', 'AI'],
+    link: 'https://github.com/Hectorajm2001/Escaner-wifi'
+  },
+  {
+    title: 'Microservices Hub',
+    description: 'Micro-SaaS control plane to manage, monitor and deploy microservices with open source cloud-native stack.',
+    icon: <Code size={32} className="project-icon" />,
+    tech: ['TypeScript', 'Cloud-Native', 'Micro-SaaS'],
+    link: 'https://github.com/Hectorajm2001/open-source-microservices-hub'
   },
   {
     title: 'Personal Web Portal',
     description: 'This very website! A modern React application serving as a portfolio and secure gateway.',
     icon: <Code size={32} className="project-icon" />,
-    tech: ['React', 'Vite', 'CSS', 'Cloudflare'],
-    link: '#'
-  },
-  {
-    title: 'Data Analytics Dashboard',
-    description: 'A dashboard for visualizing server metrics and personal project data in real-time.',
-    icon: <Database size={32} className="project-icon" />,
-    tech: ['Python', 'Grafana', 'InfluxDB'],
-    link: '#'
+    tech: ['React', 'Vite', 'Cloudflare'],
+    link: 'https://github.com/Hectorajm2001/tunnel-web'
   }
 ];
 
@@ -71,7 +78,7 @@ const Portfolio = () => {
           </p>
           <div className="hero-actions">
             <a href="#projects" className="btn-primary">View Projects</a>
-            <a href="https://github.com" target="_blank" rel="noreferrer" className="btn-secondary">
+            <a href="https://github.com/Hectorajm2001" target="_blank" rel="noreferrer" className="btn-secondary">
               <GitBranch size={20} /> GitHub
             </a>
           </div>
