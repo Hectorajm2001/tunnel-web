@@ -40,6 +40,34 @@ const ShaderBackground = () => {
       SUNRAYS_WEIGHT: 1.0,
     });
 
+    // Forward mouse events from window to canvas so fluid works behind UI
+    const forwardEvent = (e) => {
+      if (e.target === canvas) return;
+      const evt = new MouseEvent(e.type, {
+        clientX: e.clientX,
+        clientY: e.clientY,
+        bubbles: true,
+        cancelable: true,
+        view: window
+      });
+      canvas.dispatchEvent(evt);
+    };
+
+    window.addEventListener('mousemove', forwardEvent);
+    window.addEventListener('mousedown', forwardEvent);
+    window.addEventListener('mouseup', forwardEvent);
+    window.addEventListener('touchstart', forwardEvent, { passive: true });
+    window.addEventListener('touchmove', forwardEvent, { passive: true });
+    window.addEventListener('touchend', forwardEvent);
+
+    return () => {
+      window.removeEventListener('mousemove', forwardEvent);
+      window.removeEventListener('mousedown', forwardEvent);
+      window.removeEventListener('mouseup', forwardEvent);
+      window.removeEventListener('touchstart', forwardEvent);
+      window.removeEventListener('touchmove', forwardEvent);
+      window.removeEventListener('touchend', forwardEvent);
+    };
   }, []);
 
   return <canvas ref={canvasRef} className="shader-background" />;

@@ -4,14 +4,6 @@
   min-height: 100vh;
 }
 
-.portal-page, .container {
-  pointer-events: none;
-}
-
-.portal-header, .system-status, .service-card, .btn-primary, .btn-secondary, a, button {
-  pointer-events: auto;
-}
-
 .portal-header {
   text-align: center;
   margin-bottom: 3rem;
