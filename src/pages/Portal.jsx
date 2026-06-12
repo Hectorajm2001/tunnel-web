@@ -23,14 +23,7 @@ const services = [
     color: '#13b5ea',
     status: 'online'
   },
-  {
-    name: 'Pi-hole',
-    description: 'Network-wide Ad Blocking',
-    url: 'https://dns.hectorajm.dpdns.org',
-    icon: <Network size={28} />,
-    color: '#f60d1a',
-    status: 'online'
-  },
+
   {
     name: 'Grafana',
     description: 'Server Metrics & Monitoring',
