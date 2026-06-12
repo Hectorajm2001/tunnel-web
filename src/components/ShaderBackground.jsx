@@ -32,20 +32,42 @@ const ShaderBackground = () => {
       BLOOM: true,
       BLOOM_ITERATIONS: 8,
       BLOOM_RESOLUTION: 256,
-      BLOOM_INTENSITY: 0.8,
+      BLOOM_INTENSITY: 0.3, // Lowered brightness
       BLOOM_THRESHOLD: 0.6,
       BLOOM_SOFT_KNEE: 0.7,
       SUNRAYS: true,
       SUNRAYS_RESOLUTION: 196,
-      SUNRAYS_WEIGHT: 1.0,
+      SUNRAYS_WEIGHT: 0.5, // Lowered sunrays
     });
 
-    // Forward mouse events from window to canvas so fluid works behind UI
+    // Forward mouse and touch events from window to canvas
     const forwardEvent = (e) => {
       if (e.target === canvas) return;
-      const evt = new MouseEvent(e.type, {
-        clientX: e.clientX,
-        clientY: e.clientY,
+      
+      let clientX = e.clientX;
+      let clientY = e.clientY;
+      let type = e.type;
+
+      // Map touch events to mouse events for the simulation
+      if (e.type.startsWith('touch')) {
+        if (e.touches && e.touches.length > 0) {
+          clientX = e.touches[0].clientX;
+          clientY = e.touches[0].clientY;
+        } else if (e.changedTouches && e.changedTouches.length > 0) {
+          clientX = e.changedTouches[0].clientX;
+          clientY = e.changedTouches[0].clientY;
+        }
+        
+        if (e.type === 'touchstart') type = 'mousedown';
+        if (e.type === 'touchmove') type = 'mousemove';
+        if (e.type === 'touchend') type = 'mouseup';
+      }
+
+      if (clientX === undefined) return;
+
+      const evt = new MouseEvent(type, {
+        clientX: clientX,
+        clientY: clientY,
         bubbles: true,
         cancelable: true,
         view: window
