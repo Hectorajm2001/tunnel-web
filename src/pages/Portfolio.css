@@ -118,6 +118,9 @@
   font-size: 0.9rem;
   line-height: 1.5;
   color: #e2e8f0;
+  text-align: left;
+  overflow-x: auto;
+  white-space: pre;
 }
 
 .keyword { color: #c678dd; }
@@ -211,5 +214,12 @@
   
   .hero-title {
     font-size: 3rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .code-content {
+    font-size: 0.8rem;
+    padding: 1rem;
   }
 }
