@@ -1,16 +1,38 @@
-# React + Vite
+# Homelab Web Portal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Un portal web personalizado y estático construido con React y Vite para la gestión y acceso seguro a los servicios del Homelab.
 
-Currently, two official plugins are available:
+## Características
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Diseño Moderno:** UI limpia con efectos tipo Glassmorphism, animaciones con GSAP y un shader de fondo reactivo al ratón.
+- **Datos en Tiempo Real:** Se conecta a la API del servidor (vía `server-api`) para mostrar consumo de CPU, RAM y Uptime en tiempo real.
+- **Accesos Seguros:** Tarjetas de acceso directo a los servicios multimedia y de gestión protegidos por Cloudflare Zero Trust.
+- **Despliegue Rápido:** Script integrado para compilar y desplegar instantáneamente a Cloudflare Pages.
 
-## React Compiler
+## Estructura de Servicios
+El portal actualmente enlaza a:
+- **Gestión:** Proxmox VE, Portainer, Grafana.
+- **Multimedia:** SwingMusic, Jellyfin.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+*(Nota: Pi-hole fue retirado del portal para evitar conflictos de DNS).*
 
-## Expanding the ESLint configuration
+## Desarrollo
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Para probar localmente:
+
+```bash
+npm install
+npm run dev
+```
+
+## Despliegue
+
+El portal se aloja en Cloudflare Pages. Para desplegar cualquier cambio, simplemente usa el script en PowerShell desde la raíz del proyecto (en Windows):
+
+```powershell
+.\deploy-web.ps1 "Mensaje del commit"
+```
+Este script:
+1. Sube los cambios al repositorio en GitHub.
+2. Compila la aplicación para producción.
+3. Despliega los estáticos usando Wrangler (Cloudflare CLI).

@@ -8,36 +8,11 @@ import './Portal.css';
 
 const services = [
   {
-    name: 'Proxmox VE',
-    description: 'Virtual Environment Management',
-    url: 'https://pve.hectorajm.dpdns.org', // Assuming standard subdomains
-    icon: <Server size={28} />,
-    color: '#e47911',
-    status: 'online'
-  },
-  {
-    name: 'Portainer',
-    description: 'Docker Container Management',
-    url: 'https://docker.hectorajm.dpdns.org',
-    icon: <HardDrive size={28} />,
-    color: '#13b5ea',
-    status: 'online'
-  },
-
-  {
-    name: 'Grafana',
-    description: 'Server Metrics & Monitoring',
-    url: 'https://grafana.hectorajm.dpdns.org',
-    icon: <Monitor size={28} />,
-    color: '#f05a28',
-    status: 'online'
-  },
-  {
     name: 'SwingMusic',
     description: 'Personal Music Server',
     url: 'https://swingmusic.hectorajm.dpdns.org',
     icon: <Music size={28} />,
-    color: '#9c27b0', // Purple color
+    color: '#9c27b0',
     status: 'online'
   },
   {
@@ -45,7 +20,15 @@ const services = [
     description: 'Media Streaming Server',
     url: 'https://jellyfin.hectorajm.dpdns.org',
     icon: <Film size={28} />,
-    color: '#00a4dc', // Jellyfin blue
+    color: '#00a4dc',
+    status: 'online'
+  },
+  {
+    name: 'Desktop',
+    description: 'Remote Desktop (XRDP)',
+    url: 'https://desktop.hectorajm.dpdns.org',
+    icon: <Monitor size={28} />,
+    color: '#4caf50',
     status: 'online'
   }
 ];
