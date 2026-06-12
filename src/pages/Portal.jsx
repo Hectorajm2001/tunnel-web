@@ -112,7 +112,7 @@ const Portal = () => {
             <div style={{ flex: 1 }}>
               <div className="stat-header">
                 <p className="status-label">RAM</p>
-                <p className="status-value">{stats ? `${stats.ram}%` : '...'}</p>
+                <p className="status-value">{stats && stats.ramText ? stats.ramText : '...'}</p>
               </div>
               <div className="stat-bar-bg">
                 <div className="stat-bar-fill" style={{ width: `${stats ? stats.ram : 0}%`, background: 'var(--accent-secondary)' }}></div>
