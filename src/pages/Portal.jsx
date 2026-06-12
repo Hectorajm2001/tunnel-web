@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Shield, Server, HardDrive, Network, Lock, Monitor, Cpu, Music, Film, Terminal } from 'lucide-react';
+import { LiquidGlass } from '@liquidglass/react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 
@@ -81,58 +82,62 @@ const Portal = () => {
           <p className="portal-subtitle">Access your internal infrastructure and services securely.</p>
         </header>
 
-        <div className="system-status glass-panel">
-          <div className="status-item">
-            <Cpu size={24} className="status-icon text-gradient" />
-            <div style={{ flex: 1 }}>
-              <div className="stat-header">
-                <p className="status-label">CPU</p>
-                <p className="status-value">{stats ? `${stats.cpu}%` : '...'}</p>
+        <LiquidGlass blur={20} displacementScale={1.5} elasticity={0.5} borderRadius={20}>
+          <div className="system-status glass-panel">
+            <div className="status-item">
+              <Cpu size={24} className="status-icon text-gradient" />
+              <div style={{ flex: 1 }}>
+                <div className="stat-header">
+                  <p className="status-label">CPU</p>
+                  <p className="status-value">{stats ? `${stats.cpu}%` : '...'}</p>
+                </div>
+                <div className="stat-bar-bg">
+                  <div className="stat-bar-fill" style={{ width: `${stats ? stats.cpu : 0}%`, background: 'var(--accent-primary)' }}></div>
+                </div>
               </div>
-              <div className="stat-bar-bg">
-                <div className="stat-bar-fill" style={{ width: `${stats ? stats.cpu : 0}%`, background: 'var(--accent-primary)' }}></div>
+            </div>
+            <div className="status-divider"></div>
+            <div className="status-item">
+              <HardDrive size={24} className="status-icon text-gradient" />
+              <div style={{ flex: 1 }}>
+                <div className="stat-header">
+                  <p className="status-label">RAM</p>
+                  <p className="status-value">{stats && stats.ramText ? stats.ramText : '...'}</p>
+                </div>
+                <div className="stat-bar-bg">
+                  <div className="stat-bar-fill" style={{ width: `${stats ? stats.ram : 0}%`, background: 'var(--accent-secondary)' }}></div>
+                </div>
+              </div>
+            </div>
+            <div className="status-divider"></div>
+            <div className="status-item">
+              <Lock size={24} className="status-icon text-gradient" />
+              <div>
+                <p className="status-label">Uptime</p>
+                <p className="status-value active-status" style={{ fontSize: '1rem' }}>{stats ? stats.uptime : '...'}</p>
               </div>
             </div>
           </div>
-          <div className="status-divider"></div>
-          <div className="status-item">
-            <HardDrive size={24} className="status-icon text-gradient" />
-            <div style={{ flex: 1 }}>
-              <div className="stat-header">
-                <p className="status-label">RAM</p>
-                <p className="status-value">{stats && stats.ramText ? stats.ramText : '...'}</p>
-              </div>
-              <div className="stat-bar-bg">
-                <div className="stat-bar-fill" style={{ width: `${stats ? stats.ram : 0}%`, background: 'var(--accent-secondary)' }}></div>
-              </div>
-            </div>
-          </div>
-          <div className="status-divider"></div>
-          <div className="status-item">
-            <Lock size={24} className="status-icon text-gradient" />
-            <div>
-              <p className="status-label">Uptime</p>
-              <p className="status-value active-status" style={{ fontSize: '1rem' }}>{stats ? stats.uptime : '...'}</p>
-            </div>
-          </div>
-        </div>
+        </LiquidGlass>
 
         <div className="services-grid">
           {services.map((service, index) => (
-            <a href={service.url} target="_blank" rel="noreferrer" className="service-card glass-panel" key={index}>
-              <div className="service-icon-wrapper" style={{ backgroundColor: `${service.color}20`, color: service.color }}>
-                {service.icon}
-              </div>
-              <div className="service-info">
-                <div className="service-header">
-                  <h3 className="service-name">{service.name}</h3>
-                  <div className={`status-indicator ${service.status}`}></div>
+            <a href={service.url} target="_blank" rel="noreferrer" className="service-card glass-panel" key={index} style={{ padding: 0 }}>
+              <LiquidGlass blur={20} displacementScale={1.5} elasticity={0.5} borderRadius={20} style={{ width: '100%', display: 'flex', alignItems: 'center', padding: '1.5rem', gap: '1.5rem', boxSizing: 'border-box' }}>
+                <div className="service-icon-wrapper" style={{ backgroundColor: `${service.color}20`, color: service.color }}>
+                  {service.icon}
                 </div>
-                <p className="service-desc">{service.description}</p>
-              </div>
-              <div className="service-hover-indicator">
-                <span className="arrow">→</span>
-              </div>
+                <div className="service-info">
+                  <div className="service-header">
+                    <h3 className="service-name">{service.name}</h3>
+                    <div className={`status-indicator ${service.status}`}></div>
+                  </div>
+                  <p className="service-desc">{service.description}</p>
+                </div>
+                <div className="service-hover-indicator">
+                  <span className="arrow">→</span>
+                </div>
+              </LiquidGlass>
             </a>
           ))}
         </div>

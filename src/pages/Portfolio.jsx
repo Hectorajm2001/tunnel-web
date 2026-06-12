@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { GitBranch, ExternalLink, Code, Server, Database } from 'lucide-react';
+import { LiquidGlass } from '@liquidglass/react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -87,25 +88,27 @@ const Portfolio = () => {
         <div className="hero-visual">
           <div className="glow-orb primary"></div>
           <div className="glow-orb secondary"></div>
-          <div className="code-window glass-panel">
-            <div className="window-header">
-              <span className="dot red"></span>
-              <span className="dot yellow"></span>
-              <span className="dot green"></span>
+          <LiquidGlass blur={20} displacementScale={1.5} elasticity={0.5} borderRadius={20}>
+            <div className="code-window glass-panel">
+              <div className="window-header">
+                <span className="dot red"></span>
+                <span className="dot yellow"></span>
+                <span className="dot green"></span>
+              </div>
+              <pre className="code-content">
+                <code>
+                  <span className="keyword">const</span> <span className="variable">developer</span> = {'{'}
+                  <br />  <span className="property">name</span>: <span className="string">'Hector Jaramillo Montantes'</span>,
+                  <br />  <span className="property">skills</span>: [
+                  <br />    <span className="string">'C#'</span>, <span className="string">'Java'</span>, <span className="string">'AI & Fine-tuning'</span>,
+                  <br />    <span className="string">'Web & Android'</span>, <span className="string">'Unity'</span>, <span className="string">'Unreal'</span>
+                  <br />  ],
+                  <br />  <span className="property">status</span>: <span className="string">'Building awesome things'</span>
+                  <br />{'}'};
+                </code>
+              </pre>
             </div>
-            <pre className="code-content">
-              <code>
-                <span className="keyword">const</span> <span className="variable">developer</span> = {'{'}
-                <br />  <span className="property">name</span>: <span className="string">'Hector Jaramillo Montantes'</span>,
-                <br />  <span className="property">skills</span>: [
-                <br />    <span className="string">'C#'</span>, <span className="string">'Java'</span>, <span className="string">'AI & Fine-tuning'</span>,
-                <br />    <span className="string">'Web & Android'</span>, <span className="string">'Unity'</span>, <span className="string">'Unreal'</span>
-                <br />  ],
-                <br />  <span className="property">status</span>: <span className="string">'Building awesome things'</span>
-                <br />{'}'};
-              </code>
-            </pre>
-          </div>
+          </LiquidGlass>
         </div>
       </section>
 
@@ -114,10 +117,11 @@ const Portfolio = () => {
           <h2 className="section-title">Featured <span className="text-gradient">Projects</span></h2>
           <div className="projects-grid">
             {projects.map((project, index) => (
-              <div className="project-card glass-panel" key={index}>
+            <LiquidGlass key={index} blur={20} displacementScale={1.5} elasticity={0.5} borderRadius={20}>
+              <div className="project-card glass-panel">
                 <div className="project-header">
                   {project.icon}
-                  <a href={project.link} className="project-link">
+                  <a href={project.link} target="_blank" rel="noreferrer" className="project-link">
                     <ExternalLink size={20} />
                   </a>
                 </div>
@@ -129,7 +133,8 @@ const Portfolio = () => {
                   ))}
                 </div>
               </div>
-            ))}
+            </LiquidGlass>
+          ))}
           </div>
         </div>
       </section>
