@@ -9,18 +9,25 @@ import './Portfolio.css';
 
 const projects = [
   {
+    title: 'Realme C51 Root',
+    description: 'Scripts and utilities to unlock the bootloader and root the Realme C51 smartphone.',
+    icon: <GitBranch size={32} className="project-icon" />,
+    tech: ['PowerShell', 'Android', 'Rooting'],
+    link: 'https://github.com/Hectorajm2001/realme-c51-root-unlock'
+  },
+  {
+    title: 'Encuesta-web',
+    description: 'A dynamic web application built for creating and managing surveys efficiently.',
+    icon: <Server size={32} className="project-icon" />,
+    tech: ['TypeScript', 'Web'],
+    link: 'https://github.com/Hectorajm2001/Encuesta-web'
+  },
+  {
     title: 'SentinelOps',
     description: 'A multi-agent system that detects, investigates, and generates responses to cybersecurity incidents in real time.',
     icon: <Database size={32} className="project-icon" />,
     tech: ['Python', 'AI Agents', 'Cybersecurity'],
     link: 'https://github.com/Hectorajm2001/SentinelOps'
-  },
-  {
-    title: 'Escaner-wifi',
-    description: 'WiFi DensePose turns commodity WiFi signals into real-time human pose estimation and presence detection.',
-    icon: <Server size={32} className="project-icon" />,
-    tech: ['Rust', 'WiFi Sensing', 'AI'],
-    link: 'https://github.com/Hectorajm2001/Escaner-wifi'
   },
   {
     title: 'Microservices Hub',
@@ -44,13 +51,6 @@ const projects = [
     link: 'https://github.com/Hectorajm2001/chudbi-landing'
   },
   {
-    title: 'Encuesta-web',
-    description: 'A dynamic web application built for creating and managing surveys efficiently.',
-    icon: <Server size={32} className="project-icon" />,
-    tech: ['TypeScript', 'Web'],
-    link: 'https://github.com/Hectorajm2001/Encuesta-web'
-  },
-  {
     title: 'MontiilloSite 3D',
     description: 'Sitio web de montiillo3D dedicado a la impresion 3D, muestra de trabajo, galeria y cotizaciones.',
     icon: <Code size={32} className="project-icon" />,
@@ -58,11 +58,11 @@ const projects = [
     link: 'https://github.com/Hectorajm2001/MontiilloSite'
   },
   {
-    title: 'Realme C51 Root',
-    description: 'Scripts and utilities to unlock the bootloader and root the Realme C51 smartphone.',
-    icon: <GitBranch size={32} className="project-icon" />,
-    tech: ['PowerShell', 'Android', 'Rooting'],
-    link: 'https://github.com/Hectorajm2001/realme-c51-root-unlock'
+    title: 'Escaner-wifi',
+    description: 'WiFi DensePose turns commodity WiFi signals into real-time human pose estimation and presence detection.',
+    icon: <Server size={32} className="project-icon" />,
+    tech: ['Rust', 'WiFi Sensing', 'AI'],
+    link: 'https://github.com/Hectorajm2001/Escaner-wifi'
   }
 ];
 
