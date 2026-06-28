@@ -35,6 +35,34 @@ const projects = [
     icon: <Code size={32} className="project-icon" />,
     tech: ['React', 'Vite', 'Cloudflare'],
     link: 'https://github.com/Hectorajm2001/tunnel-web'
+  },
+  {
+    title: 'Chudbi Landing',
+    description: 'Landing page for Chudbi.app. A modern and responsive presentation for the platform.',
+    icon: <Code size={32} className="project-icon" />,
+    tech: ['HTML', 'Web'],
+    link: 'https://github.com/Hectorajm2001/chudbi-landing'
+  },
+  {
+    title: 'Encuesta-web',
+    description: 'A dynamic web application built for creating and managing surveys efficiently.',
+    icon: <Server size={32} className="project-icon" />,
+    tech: ['TypeScript', 'Web'],
+    link: 'https://github.com/Hectorajm2001/Encuesta-web'
+  },
+  {
+    title: 'MontiilloSite 3D',
+    description: 'Sitio web de montiillo3D dedicado a la impresion 3D, muestra de trabajo, galeria y cotizaciones.',
+    icon: <Code size={32} className="project-icon" />,
+    tech: ['Web', '3D Printing', 'Business'],
+    link: 'https://github.com/Hectorajm2001/MontiilloSite'
+  },
+  {
+    title: 'Realme C51 Root',
+    description: 'Scripts and utilities to unlock the bootloader and root the Realme C51 smartphone.',
+    icon: <GitBranch size={32} className="project-icon" />,
+    tech: ['PowerShell', 'Android', 'Rooting'],
+    link: 'https://github.com/Hectorajm2001/realme-c51-root-unlock'
   }
 ];
 
