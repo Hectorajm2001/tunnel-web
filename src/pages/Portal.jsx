@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Shield, Server, HardDrive, Network, Lock, Monitor, Cpu, Music, Film, Terminal } from 'lucide-react';
+import { Shield, Server, HardDrive, Network, Lock, Monitor, Cpu, Music, Film, Terminal, Calculator } from 'lucide-react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 
@@ -28,6 +28,22 @@ const services = [
     description: 'Remote Desktop (XRDP)',
     url: 'https://desktop.hectorajm.dpdns.org',
     icon: <Monitor size={28} />,
+    color: '#4caf50',
+    status: 'online'
+  },
+  {
+    name: 'Chudbi (Dev)',
+    description: 'Sistema Contable (Desarrollo)',
+    url: 'https://chudbi-dev.hectorajm.dpdns.org',
+    icon: <Calculator size={28} />,
+    color: '#009688',
+    status: 'online'
+  },
+  {
+    name: 'Chudbi (Prod)',
+    description: 'Sistema Contable (Producción)',
+    url: 'https://chudbi.hectorajm.dpdns.org',
+    icon: <Calculator size={28} />,
     color: '#4caf50',
     status: 'online'
   }
