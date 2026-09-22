@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Shield, Server, HardDrive, Network, Lock, Monitor, Cpu, Music, Film, Terminal, Calculator } from 'lucide-react';
+import { Server, HardDrive, Lock, Cpu, Terminal, Home, Activity } from 'lucide-react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 
@@ -8,43 +8,27 @@ import './Portal.css';
 
 const services = [
   {
-    name: 'SwingMusic',
-    description: 'Personal Music Server',
-    url: 'https://swingmusic.hectorajm.dpdns.org',
-    icon: <Music size={28} />,
-    color: '#9c27b0',
+    name: 'Homarr',
+    description: 'Dashboard Central & Accesos Rápidos',
+    url: 'https://homarr.hectorajm.dpdns.org',
+    icon: <Home size={28} />,
+    color: '#ff5722',
     status: 'online'
   },
   {
-    name: 'Jellyfin',
-    description: 'Media Streaming Server',
-    url: 'https://jellyfin.hectorajm.dpdns.org',
-    icon: <Film size={28} />,
-    color: '#00a4dc',
+    name: 'Portainer',
+    description: 'Gestión de Contenedores y Docker',
+    url: 'https://portainer.hectorajm.dpdns.org',
+    icon: <Server size={28} />,
+    color: '#0db7ed',
     status: 'online'
   },
   {
-    name: 'Desktop',
-    description: 'Remote Desktop (XRDP)',
-    url: 'https://desktop.hectorajm.dpdns.org',
-    icon: <Monitor size={28} />,
-    color: '#4caf50',
-    status: 'online'
-  },
-  {
-    name: 'Chudbi (Dev)',
-    description: 'Sistema Contable (Desarrollo)',
-    url: 'https://chudbi-dev.hectorajm.dpdns.org',
-    icon: <Calculator size={28} />,
-    color: '#009688',
-    status: 'online'
-  },
-  {
-    name: 'Chudbi (Prod)',
-    description: 'Sistema Contable (Producción)',
-    url: 'https://chudbi.hectorajm.dpdns.org',
-    icon: <Calculator size={28} />,
-    color: '#4caf50',
+    name: 'Uptime Kuma',
+    description: 'Monitoreo de Estado y Alertas en Tiempo Real',
+    url: 'https://uptime.hectorajm.dpdns.org',
+    icon: <Activity size={28} />,
+    color: '#00e676',
     status: 'online'
   }
 ];
