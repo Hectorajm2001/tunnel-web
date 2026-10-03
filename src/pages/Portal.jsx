@@ -21,7 +21,7 @@ const services = [
   {
     name: 'Homarr',
     description: 'Dashboard Central & Accesos Rápidos',
-    url: 'https://homarr.hectorajm.dpdns.org',
+    url: 'https://dash.hectorajm.dpdns.org',
     icon: <Home size={28} />,
     color: '#ff5722',
     status: 'online'

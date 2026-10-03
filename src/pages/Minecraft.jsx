@@ -34,6 +34,9 @@ const Minecraft = () => {
   const milestones = data?.milestones || [];
   const completedCount = data?.completedMilestones || 0;
   const progressPct = milestones.length ? Math.round((completedCount / milestones.length) * 100) : 0;
+  const hackathonMilestones = data?.hackathonMilestones || [];
+  const hackathonCompletedCount = hackathonMilestones.filter((m) => m.unlocked || m.completed).length;
+  const hackathonPct = hackathonMilestones.length ? Math.round((hackathonCompletedCount / hackathonMilestones.length) * 100) : 0;
   const totals = data?.totals || { playHours: 0, blocksMined: 0, diamonds: 0, mobKills: 0, advancements: 0, deaths: 0 };
   const players = data?.players || [];
 
@@ -153,6 +156,51 @@ const Minecraft = () => {
           </div>
         </section>
 
+        {/* Hackathon Universitario CS (5 Retos) */}
+        {hackathonMilestones.length > 0 && (
+          <section className="mc-section glass-panel">
+            <div className="mc-section-header">
+              <div>
+                <h2 className="mc-section-title">
+                  🏆 Hackathon Universitario CS (5 Retos)
+                </h2>
+                <p className="mc-section-desc">
+                  Scoreboard y progreso en vivo de los 5 desafíos de Ciencias de la Computación dentro del servidor.
+                </p>
+              </div>
+              <div className="mc-progress-summary">
+                <span>{hackathonCompletedCount} / {hackathonMilestones.length} retos ({hackathonPct}%)</span>
+                <div className="stat-bar-bg" style={{ width: '160px' }}>
+                  <div className="stat-bar-fill" style={{ width: `${hackathonPct}%`, background: '#f59e0b' }} />
+                </div>
+              </div>
+            </div>
+
+            <div className="mc-milestones-grid">
+              {hackathonMilestones.map((m) => {
+                const isUnlocked = Boolean(m.unlocked || m.completed);
+                const unlockedNames = Array.isArray(m.unlockedBy) ? m.unlockedBy.join(', ') : (m.unlockedBy || '');
+                return (
+                  <div key={m.id} className={`mc-milestone ${isUnlocked ? 'done' : ''}`}>
+                    <div className="mc-milestone-icon">
+                      {isUnlocked ? <CheckCircle2 size={22} /> : <Circle size={22} />}
+                    </div>
+                    <div className="mc-milestone-body">
+                      <h4>{m.title}</h4>
+                      <p>{m.desc}</p>
+                      {unlockedNames && (
+                        <span className="mc-unlocked-by">
+                          Desbloqueado por {unlockedNames} ({m.count || 1})
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
         {/* World Progression / Milestones */}
         <section className="mc-section glass-panel">
           <div className="mc-section-header">
@@ -214,6 +262,7 @@ const Minecraft = () => {
                   <tr>
                     <th>Jugador</th>
                     <th>Estado / Ubicación</th>
+                    <th>Hackathon</th>
                     <th>Horas</th>
                     <th>Diamantes</th>
                     <th>Bloques</th>
@@ -242,6 +291,7 @@ const Minecraft = () => {
                           <span className="mc-offline-tag">Desconectado</span>
                         )}
                       </td>
+                      <td>{p.hackathonCompleted ?? 0} / 5</td>
                       <td>{p.playHours} h</td>
                       <td>{p.diamonds}</td>
                       <td>{p.blocksMined.toLocaleString()}</td>
