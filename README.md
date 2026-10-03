@@ -9,6 +9,22 @@ Un portal web personalizado y estático construido con React y Vite para la gest
 - **Accesos Seguros:** Tarjetas de acceso directo a los servicios multimedia y de gestión protegidos por Cloudflare Zero Trust.
 - **Despliegue Rápido:** Script integrado para compilar y desplegar instantáneamente a Cloudflare Pages.
 
+## Stack de animación y experiencia (NUEVO)
+
+| Pieza | Uso |
+|-------|-----|
+| **GSAP 3.15** (+ ScrollTrigger, SplitText) | Orquestador de animaciones: parallax con `scrub`, revelados de secciones, stagger de tarjetas, tilt 3D de tarjetas, botones magnéticos |
+| **three.js 0.186** | Nebulosa de partículas 3D del Hero (chunk lazy, DPR limitado, se pausa fuera de pantalla) |
+| **anime.js 4** | Intro cinematográfico (una vez por sesión) con contador y barrido |
+| **Lenis 1.3** | Scroll suave sincronizado con ScrollTrigger (`gsap.ticker`) |
+| **WebGL Fluid** | Humo interactivo, scoped únicamente al Hero |
+
+Notas de comportamiento:
+
+- El **intro** se muestra una sola vez por sesión (`sessionStorage`) y se omite con `prefers-reduced-motion`.
+- Todos los efectos de puntero (tilt/magnético) y el scroll suave se **desactivan** con `prefers-reduced-motion` y en dispositivos táctiles.
+- El humo (WebGL) usa un **canvas singleton** que se reutiliza al navegar entre páginas (sin duplicar simulaciones).
+
 ## Estructura de Servicios
 El portal actualmente enlaza a:
 - **Gestión:** Proxmox VE, Portainer, Grafana.
@@ -23,6 +39,14 @@ Para probar localmente:
 ```bash
 npm install
 npm run dev
+```
+
+Scripts útiles:
+
+```bash
+npm run lint     # ESLint
+npm run build    # build de producción (dist/)
+npm run preview  # sirve el build de producción en local
 ```
 
 ## Despliegue

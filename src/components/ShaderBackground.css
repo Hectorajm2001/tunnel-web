@@ -6,3 +6,28 @@
   height: 100vh;
   z-index: -1;
 }
+
+/* NUEVO: el canvas llena su contenedor */
+.shader-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ============================================================
+   NUEVO: variante "hero-smoke" — el humo vive SOLO dentro del Hero
+   (absoluto dentro de .hero-section, con bordes difuminados para
+   integrarse como humo y no como un rectángulo)
+   ============================================================ */
+.shader-background.hero-smoke {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  opacity: 0.9; /* NUEVO: un punto menos de intensidad */
+  /* NUEVO: máscara más cerrada para que el humo no toque los bordes de la sección */
+  -webkit-mask-image: radial-gradient(ellipse 72% 64% at 50% 46%, #000 36%, transparent 100%);
+  mask-image: radial-gradient(ellipse 72% 64% at 50% 46%, #000 36%, transparent 100%);
+}

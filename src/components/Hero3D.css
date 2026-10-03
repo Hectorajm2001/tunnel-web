@@ -1,0 +1,19 @@
+/* ============================================================
+   NUEVO: canvas 3D del Hero (three.js) — capa decorativa
+   ============================================================ */
+.hero-3d {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none; /* no bloquea clics ni el humo */
+  /* NUEVO: difumina los bordes del canvas para que la nebulosa no se corte
+     en seco contra el navbar ni contra la cinta del marquee */
+  -webkit-mask-image: radial-gradient(ellipse 78% 72% at 62% 45%, #000 42%, transparent 100%);
+  mask-image: radial-gradient(ellipse 78% 72% at 62% 45%, #000 42%, transparent 100%);
+}
+
+.hero-3d canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

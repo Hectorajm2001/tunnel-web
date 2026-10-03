@@ -1,0 +1,17 @@
+{
+  "name": "HectorAJM | Portfolio & Portal",
+  "short_name": "HectorAJM",
+  "description": "Personal Portfolio & Secure Infrastructure Portal by HectorAJM.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,12 +1,23 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Server, HardDrive, Lock, Cpu, Terminal, Home, Activity } from 'lucide-react';
+import { useRef, useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { Server, HardDrive, Lock, Cpu, Terminal, Home, Activity, Gamepad2 } from 'lucide-react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { useTilt } from '../hooks/usePointerFx';
 
 gsap.registerPlugin(useGSAP);
 import './Portal.css';
 
 const services = [
+  {
+    name: 'Minecraft Live Map & Avance',
+    description: 'Mapa 3D en Vivo, Progreso del Mundo, Estadísticas y Modpack',
+    url: '/minecraft',
+    internal: true,
+    icon: <Gamepad2 size={28} />,
+    color: '#10b981',
+    status: 'online'
+  },
   {
     name: 'Homarr',
     description: 'Dashboard Central & Accesos Rápidos',
@@ -49,17 +60,21 @@ const Portal = () => {
         console.error('Error fetching stats:', error);
       }
     };
-    
+
     fetchStats();
     const interval = setInterval(fetchStats, 5000);
     return () => clearInterval(interval);
   }, []);
 
+  // NUEVO: inclinación 3D + brillo en las tarjetas de servicio (solo desktop)
+  useTilt(container, '.service-card', { max: 6 });
+
   useGSAP(() => {
     const tl = gsap.timeline();
-    
-    tl.from('.security-badge', { y: -20, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' })
-      .from('.portal-title', { y: 20, opacity: 0, duration: 0.6, ease: 'power3.out' }, '-=0.3')
+
+    // NUEVO: se quitó la animación de .security-badge (ya no existe en el markup
+    // y generaba un warning de GSAP en consola)
+    tl.from('.portal-title', { y: 20, opacity: 0, duration: 0.6, ease: 'power3.out' })
       .from('.portal-subtitle', { y: 20, opacity: 0, duration: 0.6, ease: 'power3.out' }, '-=0.4')
       .from('.system-status', { scale: 0.95, opacity: 0, duration: 0.6, ease: 'power3.out' }, '-=0.2');
 
@@ -75,6 +90,9 @@ const Portal = () => {
 
   return (
     <div className="portal-page" ref={container}>
+      {/* NUEVO: fondo mesh decorativo (CSS puro) */}
+      <div className="portal-bg" aria-hidden="true" />
+
       <div className="container">
         <header className="portal-header">
           <h1 className="portal-title"><Terminal className="brand-icon" size={48} /> Hector<span className="text-gradient">AJM</span></h1>
@@ -118,23 +136,29 @@ const Portal = () => {
         </div>
 
         <div className="services-grid">
-          {services.map((service, index) => (
-            <a href={service.url} target="_blank" rel="noreferrer" className="service-card glass-panel" key={index}>
-              <div className="service-icon-wrapper" style={{ backgroundColor: `${service.color}20`, color: service.color }}>
-                {service.icon}
-              </div>
-              <div className="service-info">
-                <div className="service-header">
-                  <h3 className="service-name">{service.name}</h3>
-                  <div className={`status-indicator ${service.status}`}></div>
+          {services.map((service, index) => {
+            const CardTag = service.internal ? Link : 'a';
+            const cardProps = service.internal
+              ? { to: service.url }
+              : { href: service.url, target: '_blank', rel: 'noreferrer' };
+            return (
+              <CardTag {...cardProps} className="service-card glass-panel" key={index}>
+                <div className="service-icon-wrapper" style={{ backgroundColor: `${service.color}20`, color: service.color }}>
+                  {service.icon}
                 </div>
-                <p className="service-desc">{service.description}</p>
-              </div>
-              <div className="service-hover-indicator">
-                <span className="arrow">→</span>
-              </div>
-            </a>
-          ))}
+                <div className="service-info">
+                  <div className="service-header">
+                    <h3 className="service-name">{service.name}</h3>
+                    <div className={`status-indicator ${service.status}`}></div>
+                  </div>
+                  <p className="service-desc">{service.description}</p>
+                </div>
+                <div className="service-hover-indicator">
+                  <span className="arrow">→</span>
+                </div>
+              </CardTag>
+            );
+          })}
         </div>
       </div>
     </div>

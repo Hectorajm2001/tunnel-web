@@ -22,6 +22,19 @@
     <meta property="twitter:title" content="HectorAJM | Portfolio & Portal" />
     <meta property="twitter:description" content="Personal Portfolio & Secure Infrastructure Portal by HectorAJM." />
     <meta property="twitter:image" content="https://hectorajm.dpdns.org/preview.png" />
+
+    <!-- NUEVO: fuentes con preconnect (antes se cargaban con @import en CSS y bloqueaban el render) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- NUEVO: color de tema + manifest (instalable) -->
+    <meta name="theme-color" content="#020617" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="manifest" href="/site.webmanifest" />
   </head>
   <body>
     <div id="root"></div>
