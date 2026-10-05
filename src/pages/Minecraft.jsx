@@ -1186,6 +1186,12 @@ const Minecraft = () => {
   const isAdmin = playerUser?.username?.toLowerCase() === 'antoniojara';
 
   useEffect(() => {
+    if (playerUser?.username) {
+      if (!isAdmin) {
+        setSelectedPlayer(playerUser.username);
+      }
+      inspectPlayer(playerUser.username);
+    }
     if (isAdmin) {
       setShowAdmin(true);
       setAdminUnlocked(true);
@@ -1194,7 +1200,7 @@ const Minecraft = () => {
       setShowAdmin(false);
       setAdminUnlocked(false);
     }
-  }, [isAdmin]);
+  }, [playerUser?.username, isAdmin]);
 
   const handlePlayerLogin = async (e) => {
     e.preventDefault();
@@ -1228,6 +1234,8 @@ const Minecraft = () => {
         setMySettings(resData.player.settings);
         setLoginModalOpen(false);
         setLoginForm({ username: '', password: '' });
+        setSelectedPlayer(resData.player.username);
+        inspectPlayer(resData.player.username);
         playMcSfx('xp');
         const statsRes = await fetch(`${API_BASE}/api/minecraft`);
         if (statsRes.ok) setData(await statsRes.json());
@@ -1246,6 +1254,7 @@ const Minecraft = () => {
     setPlayerUser(null);
     setShowAdmin(false);
     setAdminUnlocked(false);
+    setInspectData(null);
     setSettingsModalOpen(false);
   };
 
@@ -1318,8 +1327,8 @@ const Minecraft = () => {
         headers,
         body: JSON.stringify({
           password: adminPass,
-          player: selectedPlayer || 'AntonioJara',
-          uuid: currentPlayerObj?.uuid,
+          player: payload?.player || selectedPlayer || playerUser?.username || 'AntonioJara',
+          uuid: payload?.uuid || currentPlayerObj?.uuid,
           ...payload
         })
       });
@@ -1337,10 +1346,14 @@ const Minecraft = () => {
   };
 
   const inspectPlayer = async (targetName) => {
-    const pObj = (data?.players || []).find((p) => p.name === (targetName || selectedPlayer)) || currentPlayerObj;
-    if (!pObj) return;
+    const pName = targetName || selectedPlayer || playerUser?.username || 'AntonioJara';
+    const pObj = (data?.players || []).find((p) => p.name?.toLowerCase() === pName.toLowerCase()) || currentPlayerObj;
     setInspectLoading(true);
-    const res = await callAdmin({ action: 'inspect', player: pObj.name, uuid: pObj.uuid });
+    const res = await callAdmin({
+      action: 'inspect',
+      player: pObj?.name || pName,
+      uuid: pObj?.uuid
+    });
     setInspectLoading(false);
     if (res) {
       setAdminUnlocked(true);
@@ -1787,17 +1800,27 @@ const Minecraft = () => {
   };
 
   const renderMcSlot = ({ slotType, slotKey, item, placeholderUrl, labelTag, isHotbarActive = false }) => {
-    const isSelected = selectedSlot?.slotType === slotType && String(selectedSlot?.slot) === String(slotKey);
+    const isSelected = isAdmin && selectedSlot?.slotType === slotType && String(selectedSlot?.slot) === String(slotKey);
     const hasEnchants = item?.enchantments && Object.keys(item.enchantments).length > 0;
 
     return (
       <div
         key={`${slotType}-${slotKey}`}
-        className={`mc-slot ${slotType === 'enderchest' ? 'ender-slot' : ''} ${isSelected ? 'selected' : ''} ${isHotbarActive ? 'active-hotbar' : ''}`}
-        onClick={() => handleSlotClick(slotType, slotKey, item)}
-        onContextMenu={(e) => handleSlotRightClick(e, slotType, slotKey, item)}
-        onDragOver={(e) => e.preventDefault()}
+        className={`mc-slot ${slotType === 'enderchest' ? 'ender-slot' : ''} ${isSelected ? 'selected' : ''} ${isHotbarActive ? 'active-hotbar' : ''} ${!isAdmin ? 'readonly-slot' : ''}`}
+        onClick={() => {
+          if (!isAdmin) return;
+          handleSlotClick(slotType, slotKey, item);
+        }}
+        onContextMenu={(e) => {
+          if (!isAdmin) return;
+          handleSlotRightClick(e, slotType, slotKey, item);
+        }}
+        onDragOver={(e) => {
+          if (!isAdmin) return;
+          e.preventDefault();
+        }}
         onDrop={async (e) => {
+          if (!isAdmin) return;
           e.preventDefault();
           const raw = e.dataTransfer.getData('text/plain');
           if (!raw) return;
@@ -1829,9 +1852,9 @@ const Minecraft = () => {
             }
           } catch {}
         }}
-        draggable={Boolean(item?.id)}
+        draggable={isAdmin && Boolean(item?.id)}
         onDragStart={(e) => {
-          if (!item?.id) return;
+          if (!isAdmin || !item?.id) return;
           e.dataTransfer.setData('text/plain', JSON.stringify({
             fromType: slotType,
             fromSlot: slotKey,
@@ -2223,7 +2246,7 @@ const Minecraft = () => {
 
             {playerUser ? (
               <div className="mc-user-actions">
-                {isAdmin && (
+                {isAdmin ? (
                   <button
                     type="button"
                     onClick={() => {
@@ -2235,6 +2258,20 @@ const Minecraft = () => {
                   >
                     <Crown size={16} />
                     <span>👑 Modo Dios Activo</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playMcSfx('pop');
+                      const el = document.getElementById('mc-god-mode');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="mc-dl-btn"
+                    style={{ borderColor: '#ffaa00', color: '#ffaa00' }}
+                  >
+                    <McItemIcon id="chest" size={16} />
+                    <span>🎒 Mi Inventario</span>
                   </button>
                 )}
 
@@ -2278,46 +2315,60 @@ const Minecraft = () => {
         {/* =====================================================
             1:1 GOD MODE / SURVIVAL INVENTORY + CREATIVE SPAWNER
            ===================================================== */}
-        {isAdmin && (
+        {playerUser && (
           <section className="mc-dark-panel" id="mc-god-mode">
             <div className="mc-section-header">
               <div>
                 <h2 className="mc-section-title">
-                  <McItemIcon id="command_block" size={26} />
-                  <span>MODO DIOS — PANEL DE ADMINISTRADOR ({playerUser?.username})</span>
+                  <McItemIcon id={isAdmin ? 'command_block' : 'chest'} size={26} />
+                  <span>
+                    {isAdmin
+                      ? `MODO DIOS — PANEL DE ADMINISTRADOR (${playerUser?.username})`
+                      : `🎒 MI INVENTARIO Y EQUIPAMIENTO — ${playerUser?.username}`}
+                  </span>
                 </h2>
                 <p className="mc-section-desc">
-                  Edita el inventario de cualquiera, invoca jefes épicos, lanza eventos mundiales o haz bromas.
+                  {isAdmin
+                    ? 'Edita el inventario de cualquiera, invoca jefes épicos, lanza eventos mundiales o haz bromas.'
+                    : 'Vista en tiempo real de tus objetos, armadura, barra de vida y modelo 3D. Haz clic en tu muñeco para ver secretos.'}
                 </p>
               </div>
-              {adminLog && <div className="mc-god-toast">{adminLog}</div>}
+              {isAdmin ? (
+                adminLog && <div className="mc-god-toast">{adminLog}</div>
+              ) : (
+                <div className="mc-god-toast" style={{ borderColor: '#55ff55', color: '#55ff55' }}>
+                  🔒 Modo Solo Lectura
+                </div>
+              )}
             </div>
 
             <div>
               {/* Top Operator Toolbar */}
                 <div className="mc-god-toolbar">
-                  <div className="mc-god-field">
-                    <label>🎯 Jugador:</label>
-                    <select
-                      value={selectedPlayer}
-                      onChange={(e) => {
-                        setSelectedPlayer(e.target.value);
-                        setSelectedSlot(null);
-                        inspectPlayer(e.target.value);
-                      }}
-                      className="mc-god-select"
-                    >
-                      {players.map((p) => (
-                        <option key={p.uuid} value={p.name}>
-                          {p.online ? '🟢' : '⚪'} {p.name.replace(/^\./, '')} ({p.location ? `${p.location.dimension}: ${p.location.x}, ${p.location.z}` : 'Offline'})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  {isAdmin && (
+                    <div className="mc-god-field">
+                      <label>🎯 Jugador:</label>
+                      <select
+                        value={selectedPlayer}
+                        onChange={(e) => {
+                          setSelectedPlayer(e.target.value);
+                          setSelectedSlot(null);
+                          inspectPlayer(e.target.value);
+                        }}
+                        className="mc-god-select"
+                      >
+                        {players.map((p) => (
+                          <option key={p.uuid} value={p.name}>
+                            {p.online ? '🟢' : '⚪'} {p.name.replace(/^\./, '')} ({p.location ? `${p.location.dimension}: ${p.location.x}, ${p.location.z}` : 'Offline'})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
 
                   <button
                     type="button"
-                    onClick={() => inspectPlayer(selectedPlayer)}
+                    onClick={() => inspectPlayer(isAdmin ? selectedPlayer : playerUser.username)}
                     className="mc-btn"
                   >
                     <RefreshCw size={15} className={inspectLoading ? 'spin' : ''} />
@@ -2345,65 +2396,6 @@ const Minecraft = () => {
                     <span>Ver en el Mapa</span>
                   </button>
 
-                  <div className="mc-god-field">
-                    <input
-                      type="text"
-                      value={adminMe}
-                      onChange={(e) => setAdminMe(e.target.value)}
-                      placeholder="Tu nick (AntonioJara)"
-                      className="mc-god-input small"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => callAdmin({ action: 'god_action', godType: 'spectate_ingame', adminPlayer: adminMe })}
-                      className="mc-btn aqua"
-                    >
-                      👻 Espectar en el juego
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => callAdmin({ action: 'god_action', godType: 'survival_ingame', adminPlayer: adminMe })}
-                      className="mc-btn"
-                    >
-                      Volver a Survival
-                    </button>
-                  </div>
-                </div>
-
-                {/* Quick Vitals Actions */}
-                <div className="mc-god-field" style={{ marginBottom: '1.1rem' }}>
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      playMcSfx('xp');
-                      await callAdmin({ action: 'god_action', godType: 'heal' });
-                      inspectPlayer(selectedPlayer);
-                    }}
-                    className="mc-btn emerald"
-                  >
-                    <McItemIcon id="golden_apple" size={18} />
-                    <span>Curar y Alimentar</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      playMcSfx('xp');
-                      await callAdmin({ action: 'god_action', godType: 'xp' });
-                      inspectPlayer(selectedPlayer);
-                    }}
-                    className="mc-btn"
-                  >
-                    <McItemIcon id="experience_bottle" size={18} />
-                    <span>+30 Niveles XP</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => callAdmin({ action: 'god_action', godType: 'clear_effects' })}
-                    className="mc-btn"
-                  >
-                    <McItemIcon id="milk_bucket" size={18} />
-                    <span>Limpiar Efectos</span>
-                  </button>
                   <button
                     type="button"
                     onClick={cycleDollEasterEgg}
@@ -2415,15 +2407,79 @@ const Minecraft = () => {
                       Tag: {dollEasterEgg === 'normal' ? 'Normal' : dollEasterEgg === 'dinnerbone' ? '🙃 Dinnerbone' : '🌈 jeb_'}
                     </span>
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => callAdmin({ action: 'god_action', godType: 'kill' })}
-                    className="mc-btn red"
-                  >
-                    <McItemIcon id="netherite_sword" size={18} />
-                    <span>Matar Jugador</span>
-                  </button>
+
+                  {isAdmin && (
+                    <div className="mc-god-field">
+                      <input
+                        type="text"
+                        value={adminMe}
+                        onChange={(e) => setAdminMe(e.target.value)}
+                        placeholder="Tu nick (AntonioJara)"
+                        className="mc-god-input small"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => callAdmin({ action: 'god_action', godType: 'spectate_ingame', adminPlayer: adminMe })}
+                        className="mc-btn aqua"
+                      >
+                        👻 Espectar en el juego
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => callAdmin({ action: 'god_action', godType: 'survival_ingame', adminPlayer: adminMe })}
+                        className="mc-btn"
+                      >
+                        Volver a Survival
+                      </button>
+                    </div>
+                  )}
                 </div>
+
+                {/* Quick Vitals Actions - Admin Cheats */}
+                {isAdmin && (
+                  <div className="mc-god-field" style={{ marginBottom: '1.1rem' }}>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        playMcSfx('xp');
+                        await callAdmin({ action: 'god_action', godType: 'heal' });
+                        inspectPlayer(selectedPlayer);
+                      }}
+                      className="mc-btn emerald"
+                    >
+                      <McItemIcon id="golden_apple" size={18} />
+                      <span>Curar y Alimentar</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        playMcSfx('xp');
+                        await callAdmin({ action: 'god_action', godType: 'xp' });
+                        inspectPlayer(selectedPlayer);
+                      }}
+                      className="mc-btn"
+                    >
+                      <McItemIcon id="experience_bottle" size={18} />
+                      <span>+30 Niveles XP</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => callAdmin({ action: 'god_action', godType: 'clear_effects' })}
+                      className="mc-btn"
+                    >
+                      <McItemIcon id="milk_bucket" size={18} />
+                      <span>Limpiar Efectos</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => callAdmin({ action: 'god_action', godType: 'kill' })}
+                      className="mc-btn red"
+                    >
+                      <McItemIcon id="netherite_sword" size={18} />
+                      <span>Matar Jugador</span>
+                    </button>
+                  </div>
+                )}
 
                 {/* =================================================
                     MAIN 2-COLUMN WORKSPACE:
@@ -2500,55 +2556,63 @@ const Minecraft = () => {
                                 ))}
                               </div>
                               <span className="mc-craft-arrow">➔</span>
-                              <div
-                                className="mc-slot trash-slot"
-                                onClick={handleTrashClick}
-                                onDragOver={(e) => e.preventDefault()}
-                                onDrop={async (e) => {
-                                  e.preventDefault();
-                                  const raw = e.dataTransfer.getData('text/plain');
-                                  if (!raw) return;
-                                  try {
-                                    const payload = JSON.parse(raw);
-                                    if (payload.fromSlot !== undefined) {
-                                      playMcSfx('break');
-                                      await callAdmin({
-                                        action: 'remove_slot',
-                                        slotType: payload.fromType,
-                                        slot: payload.fromSlot
-                                      });
-                                      setSelectedSlot(null);
-                                      await inspectPlayer(selectedPlayer);
-                                    }
-                                  } catch {}
-                                }}
-                              >
-                                <McItemIcon id="lava_bucket" size={30} />
-                                <div className="mc-tooltip">
-                                  <div className="mc-tooltip-title" style={{ color: '#ff5555' }}>
-                                    🗑️ Eliminar Ítem (Basurero)
-                                  </div>
-                                  <div className="mc-tooltip-hint">
-                                    Arrastra un objeto aquí o selecciónalo y haz clic para destruirlo
+                              {isAdmin ? (
+                                <div
+                                  className="mc-slot trash-slot"
+                                  onClick={handleTrashClick}
+                                  onDragOver={(e) => e.preventDefault()}
+                                  onDrop={async (e) => {
+                                    e.preventDefault();
+                                    const raw = e.dataTransfer.getData('text/plain');
+                                    if (!raw) return;
+                                    try {
+                                      const payload = JSON.parse(raw);
+                                      if (payload.fromSlot !== undefined) {
+                                        playMcSfx('break');
+                                        await callAdmin({
+                                          action: 'remove_slot',
+                                          slotType: payload.fromType,
+                                          slot: payload.fromSlot
+                                        });
+                                        setSelectedSlot(null);
+                                        await inspectPlayer(selectedPlayer);
+                                      }
+                                    } catch {}
+                                  }}
+                                >
+                                  <McItemIcon id="lava_bucket" size={30} />
+                                  <div className="mc-tooltip">
+                                    <div className="mc-tooltip-title" style={{ color: '#ff5555' }}>
+                                      🗑️ Eliminar Ítem (Basurero)
+                                    </div>
+                                    <div className="mc-tooltip-hint">
+                                      Arrastra un objeto aquí o selecciónalo y haz clic para destruirlo
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
+                              ) : (
+                                <div className="mc-slot readonly-slot" title="Fabricación (Solo lectura)">
+                                  <McItemIcon id="crafting_table" size={28} />
+                                </div>
+                              )}
                             </div>
                           </div>
 
-                          <button
-                            type="button"
-                            onClick={async () => {
-                              playMcSfx('break');
-                              await callAdmin({ action: 'remove_slot', slotType: 'clear_all' });
-                              setSelectedSlot(null);
-                              inspectPlayer(selectedPlayer);
-                            }}
-                            className="mc-btn red"
-                            style={{ width: '100%', padding: '0.35rem 0.5rem', fontSize: '1.05rem' }}
-                          >
-                            🗑️ Vaciar Todo
-                          </button>
+                          {isAdmin && (
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                playMcSfx('break');
+                                await callAdmin({ action: 'remove_slot', slotType: 'clear_all' });
+                                setSelectedSlot(null);
+                                inspectPlayer(selectedPlayer);
+                              }}
+                              className="mc-btn red"
+                              style={{ width: '100%', padding: '0.35rem 0.5rem', fontSize: '1.05rem' }}
+                            >
+                              🗑️ Vaciar Todo
+                            </button>
+                          )}
                         </div>
                       </div>
 
@@ -2664,8 +2728,9 @@ const Minecraft = () => {
                     </div>
                   </div>
 
-                  {/* RIGHT PANEL: 1:1 Creative Inventory Catalog & Spawner */}
-                  <div>
+                  {isAdmin ? (
+                    <div>
+                      {/* RIGHT PANEL: 1:1 Creative Inventory Catalog & Spawner */}
                     {/* Folder Tabs */}
                     <div className="mc-creative-tabs">
                       {Object.entries(CREATIVE_CATALOG).map(([tabKey, tabObj]) => (
@@ -2848,11 +2913,138 @@ const Minecraft = () => {
                       </div>
                     </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="mc-player-profile-view">
+                    <div className="mc-gui-window" style={{ height: '100%' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <McItemIcon id="compass" size={24} />
+                          <span className="mc-gui-title" style={{ margin: 0 }}>
+                            FICHA DE SUPERVIVENCIA
+                          </span>
+                        </div>
+                        <span className={`mc-badge ${currentPlayerObj?.online ? 'online' : 'offline'}`}>
+                          {currentPlayerObj?.online ? '🟢 Conectado' : '⚪ Desconectado'}
+                        </span>
+                      </div>
 
-                {/* =================================================
-                    ELABORATE MULTI-STAGE PRANKS & GOD CONTROLS DECK
-                   ================================================= */}
+                      <div className="mc-player-profile-card">
+                        <div className="mc-player-profile-top">
+                          <img
+                            src={`https://mc-heads.net/avatar/${encodeURIComponent((playerUser?.username || '').replace(/^\./, ''))}/64`}
+                            alt=""
+                            className="mc-player-profile-avatar"
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = `${ASSET_BASE}/item/player_head.png`;
+                            }}
+                          />
+                          <div className="mc-player-profile-identity">
+                            <h4 className="mc-profile-player-name">{playerUser?.username}</h4>
+                            <p className="mc-player-tagline">
+                              {mySettings?.tagline ? `"${mySettings.tagline}"` : 'Explorador de mundos'}
+                            </p>
+                            <span className="mc-player-pvp-badge">
+                              {mySettings?.pvpMode === 'pvp_allowed' ? '⚔️ PvP Abierto' : mySettings?.pvpMode === 'pvp_off' ? '🛡️ Defensivo' : '🕊️ Pacífico'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Quick Survival Gauges */}
+                        <div className="mc-player-vitals-summary">
+                          <div className="mc-vital-pill">
+                            <McItemIcon id="golden_apple" size={20} />
+                            <div>
+                              <strong>{inspectData ? `${inspectData.health} / 20` : '20 / 20'}</strong>
+                              <span>Salud</span>
+                            </div>
+                          </div>
+                          <div className="mc-vital-pill">
+                            <McItemIcon id="cooked_beef" size={20} />
+                            <div>
+                              <strong>{inspectData ? `${inspectData.food} / 20` : '20 / 20'}</strong>
+                              <span>Comida</span>
+                            </div>
+                          </div>
+                          <div className="mc-vital-pill">
+                            <McItemIcon id="experience_bottle" size={20} />
+                            <div>
+                              <strong>Nivel {inspectData?.xpLevel ?? 0}</strong>
+                              <span>Experiencia</span>
+                            </div>
+                          </div>
+                          <div className="mc-vital-pill">
+                            <McItemIcon id="compass" size={20} />
+                            <div>
+                              <strong>{inspectData?.dimension ? inspectData.dimension.toUpperCase() : 'OVERWORLD'}</strong>
+                              <span>Dimensión</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Stats Grid */}
+                        <div className="mc-profile-stats-grid">
+                          <div className="mc-profile-stat-box">
+                            <McItemIcon id="clock" size={22} />
+                            <div>
+                              <span className="val">{currentPlayerObj?.playHours ?? 0} h</span>
+                              <span className="lbl">Horas Jugadas</span>
+                            </div>
+                          </div>
+                          <div className="mc-profile-stat-box">
+                            <McItemIcon id="diamond_pickaxe" size={22} />
+                            <div>
+                              <span className="val">{(currentPlayerObj?.blocksMined ?? 0).toLocaleString()}</span>
+                              <span className="lbl">Bloques Minados</span>
+                            </div>
+                          </div>
+                          <div className="mc-profile-stat-box">
+                            <McItemIcon id="diamond" size={22} />
+                            <div>
+                              <span className="val">{currentPlayerObj?.diamonds ?? 0}</span>
+                              <span className="lbl">Diamantes</span>
+                            </div>
+                          </div>
+                          <div className="mc-profile-stat-box">
+                            <McItemIcon id="iron_sword" size={22} />
+                            <div>
+                              <span className="val">{currentPlayerObj?.mobKills ?? 0}</span>
+                              <span className="lbl">Mobs Derrotados</span>
+                            </div>
+                          </div>
+                          <div className="mc-profile-stat-box">
+                            <McItemIcon id="totem_of_undying" size={22} />
+                            <div>
+                              <span className="val">{currentPlayerObj?.deaths ?? 0}</span>
+                              <span className="lbl">Muertes</span>
+                            </div>
+                          </div>
+                          <div className="mc-profile-stat-box">
+                            <McItemIcon id="nether_star" size={22} />
+                            <div>
+                              <span className="val">{currentPlayerObj?.advancements ?? 0}</span>
+                              <span className="lbl">Logros Totales</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Friendly Secret Tip */}
+                        <div className="mc-profile-footer-tip">
+                          <McItemIcon id="name_tag" size={22} />
+                          <span>
+                            💡 <strong>Secreto:</strong> ¡Haz clic en tu muñeco 3D a la izquierda o en el botón de etiqueta para descubrir un misterio!
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* =================================================
+                  ELABORATE MULTI-STAGE PRANKS & GOD CONTROLS DECK
+                 ================================================= */}
+              {isAdmin && (
                 <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '3px solid #2e6b34' }}>
                   <div className="mc-section-header" style={{ marginBottom: '0.85rem' }}>
                     <h3 className="mc-section-title" style={{ fontSize: '0.95rem' }}>
@@ -2993,7 +3185,8 @@ const Minecraft = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
+            </div>
           </section>
         )}
 
@@ -3554,16 +3747,18 @@ const Minecraft = () => {
       <aside className="mc-wall-lever-wrap">
         <button
           type="button"
-          className="mc-wall-lever-btn"
+          className={`mc-wall-lever-btn ${leverPulled ? 'pulled' : ''}`}
           onClick={handleWallLeverClick}
           aria-label="Palanca en la pared"
         >
-          <img
-            src={leverPulled ? '/assets/lever_wall_down.png' : '/assets/lever_wall_up.png'}
-            alt="Palanca"
-            className="mc-wall-lever-img"
-            draggable={false}
-          />
+          <div className={`mc-wall-lever-handle ${leverPulled ? 'down' : 'up'}`}>
+            <img
+              src="https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/26.3/assets/minecraft/textures/block/lever.png"
+              alt="Palanca"
+              className="mc-wall-lever-img"
+              draggable={false}
+            />
+          </div>
         </button>
       </aside>
 

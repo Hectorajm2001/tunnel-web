@@ -1988,7 +1988,7 @@ body:has(.mc-page) .footer {
    ======================================================= */
 .mc-wall-lever-wrap {
   position: fixed;
-  right: 0;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 950;
@@ -2004,30 +2004,187 @@ body:has(.mc-page) .footer {
   outline: none;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  line-height: 0;
-  filter: drop-shadow(-3px 3px 6px rgba(0, 0, 0, 0.65));
+  justify-content: center;
+  filter: drop-shadow(-3px 4px 6px rgba(0, 0, 0, 0.75));
   transition: filter 0.15s ease, transform 0.1s ease;
 }
 
 .mc-wall-lever-btn:hover {
-  filter: drop-shadow(-4px 4px 10px rgba(0, 0, 0, 0.85)) brightness(1.15);
+  filter: drop-shadow(-4px 5px 8px rgba(0, 0, 0, 0.9)) brightness(1.2);
+  transform: scale(1.1);
 }
 
 .mc-wall-lever-btn:active {
-  transform: scale(0.95);
+  transform: scale(1.02);
 }
 
 .mc-wall-lever-btn:focus-visible {
   outline: 2px dashed #ffff55;
-  outline-offset: 2px;
+  outline-offset: 4px;
+}
+
+.mc-wall-lever-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: bottom center;
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.3, 1.2);
+}
+
+.mc-wall-lever-handle.up {
+  transform: rotate(26deg);
+}
+
+.mc-wall-lever-handle.down {
+  transform: rotate(-30deg) translateY(4px);
 }
 
 .mc-wall-lever-img {
-  width: 48px;
-  height: auto;
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
   image-rendering: pixelated;
   display: block;
+}
+
+/* --- Read-Only Player Profile Card in Inventory View --- */
+.mc-player-profile-view {
+  display: flex;
+  flex-direction: column;
+}
+
+.mc-player-profile-card {
+  background: #c6c6c6;
+  border-top: 3px solid #ffffff;
+  border-left: 3px solid #ffffff;
+  border-right: 3px solid #555555;
+  border-bottom: 3px solid #555555;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mc-player-profile-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #8b8b8b;
+  border-top: 2px solid #373737;
+  border-left: 2px solid #373737;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  padding: 10px 14px;
+}
+
+.mc-player-profile-avatar {
+  width: 56px;
+  height: 56px;
+  image-rendering: pixelated;
+  border: 2px solid #1a1a1a;
+  background: #333;
+}
+
+.mc-player-profile-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.mc-profile-player-name {
+  margin: 0;
+  font-family: 'Minecraft', monospace;
+  font-size: 1.15rem;
+  color: #ffff55;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.mc-player-tagline {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #ffffff;
+  font-style: italic;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.mc-player-pvp-badge {
+  display: inline-block;
+  font-size: 0.82rem;
+  color: #aaffaa;
+  margin-top: 2px;
+}
+
+.mc-player-vitals-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+.mc-vital-pill {
+  background: #2b2b2b;
+  border: 2px solid #1a1a1a;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 2px;
+}
+
+.mc-vital-pill strong {
+  display: block;
+  font-family: 'Minecraft', monospace;
+  font-size: 0.95rem;
+  color: #ffffff;
+}
+
+.mc-vital-pill span {
+  display: block;
+  font-size: 0.8rem;
+  color: #aaaaaa;
+}
+
+.mc-profile-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+  gap: 8px;
+}
+
+.mc-profile-stat-box {
+  background: #8b8b8b;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #373737;
+  border-bottom: 2px solid #373737;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mc-profile-stat-box .val {
+  display: block;
+  font-family: 'Minecraft', monospace;
+  font-size: 1rem;
+  color: #ffff55;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.mc-profile-stat-box .lbl {
+  display: block;
+  font-size: 0.78rem;
+  color: #222222;
+  text-transform: uppercase;
+}
+
+.mc-profile-footer-tip {
+  background: rgba(46, 107, 52, 0.25);
+  border: 1px dashed #2e6b34;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  color: #1a4d1f;
 }
 
 /* Roaming Teleported Dragon Egg */
@@ -2311,8 +2468,12 @@ body:has(.mc-page) .footer {
   }
 
   /* --- Wall Lever Mobile --- */
+  .mc-wall-lever-wrap {
+    right: 6px;
+  }
   .mc-wall-lever-img {
-    width: 38px;
+    width: 36px;
+    height: 36px;
   }
 
   /* --- Server Entry Banner --- */
