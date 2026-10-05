@@ -418,8 +418,9 @@ body:has(.mc-page) .footer {
   animation: mcSplashPulse 1.5s ease-in-out infinite;
 }
 
-/* Peeking Creeper Easter Egg */
-.mc-peeking-creeper {
+/* Peeking Dimension Mob Easter Egg */
+.mc-peeking-creeper,
+.mc-peeking-mob {
   position: absolute;
   top: -26px;
   right: 22px;
@@ -433,10 +434,27 @@ body:has(.mc-page) .footer {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
-  transition: transform 0.15s ease;
+  transition: transform 0.15s ease, filter 0.15s ease;
 }
 
-.mc-peeking-creeper:hover {
+.mc-peeking-mob.mob-overworld {
+  background: #3aa63a;
+  border-color: #184d18;
+}
+
+.mc-peeking-mob.mob-nether {
+  background: #eaeaea;
+  border-color: #999999;
+}
+
+.mc-peeking-mob.mob-end {
+  background: #141414;
+  border-color: #3b1852;
+  box-shadow: 0 0 8px rgba(180, 50, 230, 0.45);
+}
+
+.mc-peeking-creeper:hover,
+.mc-peeking-mob:hover {
   transform: translateY(-4px) scale(1.08);
 }
 
@@ -445,8 +463,43 @@ body:has(.mc-page) .footer {
   50% { filter: brightness(2.8) contrast(2); transform: scale(1.22); }
 }
 
-.mc-peeking-creeper.primed {
+@keyframes mcGhastShoot {
+  0%, 100% { filter: brightness(1); transform: scale(1); }
+  50% { filter: brightness(1.6) drop-shadow(0 0 10px #ff3300); transform: scale(1.25); }
+}
+
+@keyframes mcEndermanStare {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.15) rotate(-3deg); filter: drop-shadow(0 0 8px #cc22ff); }
+  75% { transform: scale(1.15) rotate(3deg); filter: drop-shadow(0 0 12px #e673ff); }
+}
+
+.mc-peeking-creeper.primed,
+.mc-peeking-mob.primed {
   animation: mcCreeperFuse 0.18s ease-in-out infinite;
+}
+
+.mc-peeking-mob.shooting {
+  animation: mcGhastShoot 0.14s ease-in-out infinite;
+}
+
+.mc-peeking-mob.staring {
+  animation: mcEndermanStare 0.12s ease-in-out infinite;
+}
+
+.mc-mob-drop {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: mcItemDropPop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.4);
+}
+
+@keyframes mcItemDropPop {
+  0% { transform: scale(0.3) translateY(8px); opacity: 0; }
+  60% { transform: scale(1.2) translateY(-4px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
 }
 
 .mc-motd-line1 {
@@ -1879,15 +1932,137 @@ body:has(.mc-page) .footer {
   transform: translateY(-3px) scale(1.08);
 }
 
-.mc-prop-label {
-  background: rgba(0, 0, 0, 0.82);
-  border: 1px solid #80ff20;
-  color: #ffff55;
-  font-size: 0.95rem;
-  padding: 0 6px;
-  margin-bottom: 3px;
-  white-space: nowrap;
-  text-shadow: 1px 1px 0 #000;
+/* Nether Respawn Anchor Prop */
+.mc-respawn-anchor {
+  position: relative;
+}
+
+.mc-anchor-charges-bar {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 3px;
+  background: rgba(0, 0, 0, 0.75);
+  padding: 2px 4px;
+  border: 1px solid #ffaa00;
+  border-radius: 2px;
+}
+
+.mc-anchor-charge-pip {
+  width: 6px;
+  height: 6px;
+  background: #332200;
+  border: 1px solid #111;
+  transition: all 0.2s ease;
+}
+
+.mc-anchor-charge-pip.charged {
+  background: #ffff55;
+  box-shadow: 0 0 6px #ffff55, 0 0 10px #ffaa00;
+}
+
+.mc-respawn-anchor.blown {
+  animation: mcAnchorShake 0.15s infinite;
+  filter: drop-shadow(0 0 15px #ba55d3);
+}
+
+@keyframes mcAnchorShake {
+  0%, 100% { transform: translate(0, 2px); }
+  50% { transform: translate(-2px, 0); }
+}
+
+/* The End Dragon Egg Prop */
+.mc-dragon-egg-prop {
+  cursor: pointer;
+  filter: drop-shadow(0 0 8px rgba(186, 85, 211, 0.55));
+}
+
+.mc-dragon-egg-prop:hover {
+  filter: drop-shadow(0 0 14px #e066ff);
+}
+
+/* =======================================================
+   WALL-MOUNTED REDSTONE DIMENSION LEVER
+   ======================================================= */
+.mc-wall-lever-wrap {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 950;
+  display: flex;
+  align-items: center;
+  filter: drop-shadow(-4px 4px 6px rgba(0, 0, 0, 0.65));
+}
+
+.mc-wall-bracket {
+  width: 52px;
+  height: 52px;
+  background-color: #636363;
+  background-image: url('https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/26.3/assets/minecraft/textures/block/cobblestone.png');
+  background-size: 52px 52px;
+  border: 3px solid #1a1a1a;
+  border-right: none;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.mc-wall-bracket:hover {
+  transform: translateX(-4px);
+  filter: brightness(1.15);
+}
+
+.mc-wall-bracket:active {
+  transform: translateX(-2px);
+}
+
+.mc-wall-bracket:focus-visible {
+  outline: 3px solid #ffff55;
+  outline-offset: 2px;
+}
+
+.mc-wall-redstone-dot {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #3b0a0a;
+  box-shadow: inset 1px 1px 0 rgba(0, 0, 0, 0.6);
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mc-wall-redstone-dot.active {
+  background: #ff2020;
+  box-shadow: 0 0 8px #ff2020, 0 0 14px #ff5555;
+}
+
+.mc-wall-lever-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.3, 1.2);
+  transform-origin: center center;
+}
+
+.mc-wall-lever-handle.up {
+  transform: rotate(26deg);
+}
+
+.mc-wall-lever-handle.down {
+  transform: rotate(-26deg) translateY(2px);
 }
 
 @keyframes mcNoteFloatUp {
@@ -1922,7 +2097,7 @@ body:has(.mc-page) .footer {
   box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.55);
 }
 
-/* Layer 2: Tiled Dirt Block Body + Buried Ores Mini-Game */
+/* Layer 2: Tiled Dirt Block Body + Organic Subterranean Ores Stratum */
 .mc-footer-dirt-body {
   width: 100%;
   background-color: #593d29;
@@ -1941,6 +2116,13 @@ body:has(.mc-page) .footer {
   margin: 0 auto;
 }
 
+/* Organic Subterranean Stratum: Natural exposed veins */
+.mc-subterranean-stratum {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
 .mc-mining-zone {
   background: rgba(0, 0, 0, 0.52);
   border: 3px solid #785238;
@@ -1957,8 +2139,14 @@ body:has(.mc-page) .footer {
 .mc-ores-row {
   display: flex;
   align-items: center;
-  gap: 14px;
+  justify-content: center;
+  gap: 16px;
   flex-wrap: wrap;
+  padding: 12px 18px;
+  background: rgba(18, 12, 8, 0.48);
+  border: 2px solid rgba(75, 48, 30, 0.65);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6);
+  border-radius: 4px;
 }
 
 .mc-ore-block {
@@ -2115,12 +2303,20 @@ body:has(.mc-page) .footer {
     line-height: 1.25;
   }
 
-  /* --- Peeking Creeper Easter Egg --- */
-  .mc-peeking-creeper {
+  /* --- Peeking Dimension Mob Easter Egg --- */
+  .mc-peeking-creeper,
+  .mc-peeking-mob {
     top: -18px;
     right: 12px;
     width: 28px;
     height: 28px;
+  }
+
+  /* --- Wall Lever Mobile --- */
+  .mc-wall-bracket {
+    width: 44px;
+    height: 44px;
+    background-size: 44px 44px;
   }
 
   /* --- Server Entry Banner --- */

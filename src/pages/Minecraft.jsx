@@ -113,6 +113,33 @@ const playMcSfx = (type = 'pop', opts = {}) => {
       case 'ender':
         mcTone(ctx, now, { freq: 190, to: 880, dur: 0.28, type: 'sine', vol: 0.15 });
         return;
+      case 'ghast':
+        mcTone(ctx, now, { freq: 720, to: 1040, dur: 0.35, type: 'sine', vol: 0.22 });
+        mcTone(ctx, now + 0.18, { freq: 1040, to: 480, dur: 0.45, type: 'triangle', vol: 0.18 });
+        mcNoise(ctx, now + 0.1, 0.45, { freq: 1400, to: 300, vol: 0.16 });
+        return;
+      case 'fireball':
+        mcNoise(ctx, now, 0.25, { freq: 400, to: 1600, vol: 0.25 });
+        mcNoise(ctx, now + 0.2, 0.8, { freq: 1200, to: 60, vol: 0.45 });
+        mcTone(ctx, now + 0.2, { freq: 85, to: 30, dur: 0.7, type: 'sawtooth', vol: 0.25 });
+        return;
+      case 'enderman':
+        mcTone(ctx, now, { freq: 310, to: 190, dur: 0.4, type: 'sawtooth', vol: 0.25 });
+        mcTone(ctx, now + 0.08, { freq: 440, to: 280, dur: 0.35, type: 'sawtooth', vol: 0.2 });
+        mcNoise(ctx, now, 0.5, { freq: 2400, to: 800, vol: 0.22 });
+        return;
+      case 'teleport':
+        mcTone(ctx, now, { freq: 180, to: 640, dur: 0.22, type: 'sine', vol: 0.25 });
+        mcTone(ctx, now + 0.05, { freq: 640, to: 160, dur: 0.24, type: 'triangle', vol: 0.2 });
+        mcNoise(ctx, now, 0.26, { freq: 1800, to: 250, type: 'bandpass', vol: 0.18 });
+        return;
+      case 'charge': {
+        const ch = opts.charge || 1;
+        const baseF = 440 + ch * 95;
+        mcTone(ctx, now, { freq: baseF, to: baseF * 1.5, dur: 0.28, type: 'triangle', vol: 0.22 });
+        mcTone(ctx, now + 0.06, { freq: baseF * 2, dur: 0.22, type: 'sine', vol: 0.16 });
+        return;
+      }
       default:
         // pop
         mcTone(ctx, now, { freq: 420, to: 660, dur: 0.07, type: 'triangle' });
@@ -169,20 +196,27 @@ const DIMENSION_ORDER = ['overworld', 'nether', 'end'];
 const NOTE_NAMES = ['F♯', 'G', 'G♯', 'A', 'A♯', 'B', 'C', 'C♯', 'D', 'D♯', 'E', 'F'];
 const KONAMI = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a'];
 
-// Catálogo de secretos: icono, nombre y pista críptica mientras están bloqueados
+// Catálogo de secretos: icono y nombre
 const SECRET_EGGS = [
-  { id: 'creeper', icon: 'gunpowder', name: 'Aw Man', hint: 'Algo verde te observa desde arriba…' },
-  { id: 'note', icon: 'note_block', name: 'Afinador Perfecto', hint: 'Sigue tocando hasta completar dos octavas.' },
-  { id: 'cake', icon: 'cake', name: 'La Tarta es Mentira', hint: 'Termina lo que empezaste. Todo.' },
-  { id: 'portal', icon: 'obsidian', name: 'Más Profundo', hint: 'Una palanca esconde otra dimensión.' },
-  { id: 'miner', icon: 'diamond_pickaxe', name: 'Minero Maestro', hint: 'Rompe un ejemplar de cada mineral.' },
-  { id: 'konami', icon: 'experience_bottle', name: 'Código Konami', hint: 'Los clásicos nunca mueren. ↑↑↓↓…' },
-  { id: 'herobrine', icon: 'ender_eye', name: 'Nunca Estuvo Allí', hint: 'El ícono del servidor no es tan inocente.' },
-  { id: 'end', icon: 'ender_pearl', name: 'El Fin... ¿o No?', hint: 'Hay una tercera dimensión esperando.' },
-  { id: 'doll', icon: 'name_tag', name: 'Nombre Raro', hint: 'Los nombres, cuando se cambian, giran el mundo.' }
+  { id: 'creeper', icon: 'gunpowder', name: 'Aw Man' },
+  { id: 'ghast', icon: 'ghast_tear', name: 'Lágrima al Viento' },
+  { id: 'enderman', icon: 'ender_eye', name: 'Contacto Visual' },
+  { id: 'note', icon: 'note_block', name: 'Afinador Perfecto' },
+  { id: 'cake', icon: 'cake', name: 'La Tarta es Mentira' },
+  { id: 'anchor', icon: 'respawn_anchor', name: 'Ancla Sobrecargada' },
+  { id: 'dragon_egg', icon: 'dragon_egg', name: 'Huevo Escapista' },
+  { id: 'portal', icon: 'obsidian', name: 'Más Profundo' },
+  { id: 'end', icon: 'ender_pearl', name: 'El Fin... ¿o No?' },
+  { id: 'miner', icon: 'diamond_pickaxe', name: 'Minero Maestro' },
+  { id: 'konami', icon: 'experience_bottle', name: 'Código Konami' },
+  { id: 'herobrine', icon: 'nether_star', name: 'Nunca Estuvo Allí' },
+  { id: 'doll', icon: 'name_tag', name: 'Nombre Raro' }
 ];
 
 const ITEM_TEXTURE_ALIASES = {
+  ghast_tear: 'item/ghast_tear.png',
+  nether_star: 'item/nether_star.png',
+  gunpowder: 'item/gunpowder.png',
   oak_log: 'block/oak_log.png',
   birch_log: 'block/birch_log.png',
   spruce_log: 'block/spruce_log.png',
@@ -962,7 +996,7 @@ const ADVANCEMENT_TABS = [
   }
 ];
 
-// 8x8 pixel Creeper face matrix for the peeking Creeper Easter Egg
+// 8x8 pixel Creeper face matrix for Overworld
 const CREEPER_FACE_PIXELS = [
   0, 0, 0, 0, 0, 0, 0, 0,
   0, 1, 1, 0, 0, 1, 1, 0,
@@ -971,6 +1005,30 @@ const CREEPER_FACE_PIXELS = [
   0, 0, 1, 1, 1, 1, 0, 0,
   0, 0, 1, 1, 1, 1, 0, 0,
   0, 0, 1, 0, 0, 1, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0
+];
+
+// 8x8 pixel Ghast face matrix for Nether (0: white body, 1: dark eye/mouth, 2: tear trails)
+const GHAST_FACE_PIXELS = [
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 1, 1, 0, 0, 1, 1, 0,
+  0, 2, 2, 0, 0, 2, 2, 0,
+  0, 2, 0, 0, 0, 0, 2, 0,
+  0, 0, 1, 1, 1, 1, 0, 0,
+  0, 0, 1, 1, 1, 1, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0
+];
+
+// 8x8 pixel Enderman face matrix for The End (0: dark body, 1: purple eye outer, 2: pink/white center)
+const ENDERMAN_FACE_PIXELS = [
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
+  1, 2, 0, 0, 0, 0, 2, 1,
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0
 ];
 
@@ -1042,6 +1100,13 @@ const Minecraft = () => {
   const konamiPos = useRef(0);
   const foundRef = useRef(foundEggs);
   const [creeperState, setCreeperState] = useState('idle'); // 'idle' | 'primed' | 'exploded'
+  const [ghastState, setGhastState] = useState('idle'); // 'idle' | 'shooting' | 'fired'
+  const [endermanState, setEndermanState] = useState('idle'); // 'idle' | 'staring' | 'teleported'
+  const [anchorCharges, setAnchorCharges] = useState(0); // 0..4
+  const [anchorBlown, setAnchorBlown] = useState(false);
+  const [eggOffset, setEggOffset] = useState({ x: 0, y: 0 });
+  const [eggTaps, setEggTaps] = useState(0);
+  const [leverPulled, setLeverPulled] = useState(false);
   const [dollEasterEgg, setDollEasterEgg] = useState('normal'); // 'normal' | 'dinnerbone' | 'jeb'
   const [dimension, setDimension] = useState(() => {
     try {
@@ -1478,26 +1543,61 @@ const Minecraft = () => {
     }
   };
 
-  const handleCreeperClick = () => {
-    if (creeperState !== 'idle') return;
-    playMcSfx('creeper');
-    setCreeperState('primed');
-    setTimeout(() => {
-      const r = creeperRef.current?.getBoundingClientRect();
-      if (r) {
-        spawnBurstAt(r.left + r.width / 2, r.top + r.height / 2, {
+  const handleMobClick = () => {
+    const r = creeperRef.current?.getBoundingClientRect();
+    const cx = r ? r.left + r.width / 2 : window.innerWidth / 2;
+    const cy = r ? r.top + r.height / 2 : 80;
+
+    if (dimension === 'overworld') {
+      if (creeperState !== 'idle') return;
+      playMcSfx('creeper');
+      setCreeperState('primed');
+      setTimeout(() => {
+        spawnBurstAt(cx, cy, {
           colors: ['#3aa63a', '#184d18', '#8fe08f', '#ffb020', '#555555', '#ffffff'],
           count: 36,
           spread: 180
         });
-      }
-      playMcSfx('explode');
-      setCreeperState('exploded');
-      setFlash(true);
-      setTimeout(() => setFlash(false), 450);
-      unlockEgg('creeper');
-      setTimeout(() => setCreeperState('idle'), 4500);
-    }, 1200);
+        playMcSfx('explode');
+        setCreeperState('exploded');
+        setFlash(true);
+        setTimeout(() => setFlash(false), 450);
+        unlockEgg('creeper');
+        setTimeout(() => setCreeperState('idle'), 4500);
+      }, 1200);
+    } else if (dimension === 'nether') {
+      if (ghastState !== 'idle') return;
+      playMcSfx('ghast');
+      setGhastState('shooting');
+      setTimeout(() => {
+        playMcSfx('fireball');
+        spawnBurstAt(cx, cy, {
+          colors: ['#ff4500', '#ffa500', '#ffff00', '#ffffff', '#555555'],
+          count: 40,
+          spread: 200
+        });
+        setGhastState('fired');
+        setFlash(true);
+        setTimeout(() => setFlash(false), 400);
+        unlockEgg('ghast');
+        setTimeout(() => setGhastState('idle'), 4500);
+      }, 700);
+    } else if (dimension === 'end') {
+      if (endermanState !== 'idle') return;
+      playMcSfx('enderman');
+      setEndermanState('staring');
+      setTimeout(() => {
+        playMcSfx('teleport');
+        spawnBurstAt(cx, cy, {
+          colors: ['#cc22ff', '#e673ff', '#6a0dad', '#ba55d3', '#ffffff'],
+          count: 38,
+          spread: 190
+        });
+        setEndermanState('teleported');
+        unlockEgg('enderman');
+        setTimeout(() => setEndermanState('idle'), 4500);
+      }, 600);
+    }
   };
 
   const handleNoteBlockClick = () => {
@@ -1538,6 +1638,74 @@ const Minecraft = () => {
     }
   };
 
+  const handleAnchorClick = (e) => {
+    if (anchorBlown) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height / 2;
+
+    if (anchorCharges < 4) {
+      const next = anchorCharges + 1;
+      setAnchorCharges(next);
+      playMcSfx('charge', { charge: next });
+      spawnBurstAt(cx, cy, {
+        colors: ['#ffff55', '#ffaa00', '#fff8a0', '#ffcc00'],
+        count: 12 + next * 4,
+        spread: 45 + next * 8
+      });
+    } else {
+      playMcSfx('explode');
+      spawnBurstAt(cx, cy, {
+        colors: ['#800080', '#ba55d3', '#ffa500', '#ffff55', '#220022', '#ffffff'],
+        count: 48,
+        spread: 220
+      });
+      setAnchorBlown(true);
+      setFlash(true);
+      setTimeout(() => setFlash(false), 500);
+      unlockEgg('anchor');
+      setTimeout(() => {
+        setAnchorBlown(false);
+        setAnchorCharges(0);
+      }, 5000);
+    }
+  };
+
+  const handleDragonEggClick = (e) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height / 2;
+
+    playMcSfx('teleport');
+    spawnBurstAt(cx, cy, {
+      colors: ['#bf00ff', '#e066ff', '#8a2be2', '#220033', '#ffffff'],
+      count: 22,
+      spread: 75
+    });
+
+    const nextTaps = eggTaps + 1;
+    setEggTaps(nextTaps);
+
+    if (nextTaps >= 3) {
+      playMcSfx('achievement');
+      spawnBurstAt(cx, cy, {
+        colors: ['#bf00ff', '#e066ff', '#ffd700', '#ffffff', '#ff69b4'],
+        count: 44,
+        spread: 180
+      });
+      unlockEgg('dragon_egg');
+      setTimeout(() => {
+        setEggTaps(0);
+        setEggOffset({ x: 0, y: 0 });
+      }, 4500);
+    } else {
+      const dir = nextTaps === 1 ? -1 : 1;
+      const newX = dir * (28 + Math.random() * 45);
+      const newY = (Math.random() - 0.5) * 20;
+      setEggOffset({ x: newX, y: newY });
+    }
+  };
+
   const goDimension = (target) => {
     if (portalFx || target === dimension) return;
     playMcSfx('lever');
@@ -1554,7 +1722,8 @@ const Minecraft = () => {
     }, 1850);
   };
 
-  const handleLeverClick = () => {
+  const handleWallLeverClick = () => {
+    setLeverPulled((prev) => !prev);
     const next = DIMENSION_ORDER[(DIMENSION_ORDER.indexOf(dimension) + 1) % DIMENSION_ORDER.length];
     goDimension(next);
   };
@@ -1905,33 +2074,66 @@ const Minecraft = () => {
             MULTIPLAYER SERVER LIST HEADER (OVERWORLD LUSH BANNER)
            ===================================================== */}
         <header className={`mc-server-banner ${creeperState === 'exploded' ? 'creeper-boom' : ''}`}>
-          {/* Peeking Creeper Easter Egg */}
+          {/* Peeking Dimension Mob Easter Egg */}
           <div
             ref={creeperRef}
             role="button"
             tabIndex={0}
-            aria-label="Creeper escondido: no lo toques"
-            className={`mc-peeking-creeper ${creeperState === 'primed' ? 'primed' : ''}`}
-            onClick={handleCreeperClick}
+            aria-label="Entidad misteriosa"
+            className={`mc-peeking-mob mob-${dimension} ${
+              dimension === 'overworld' && creeperState === 'primed' ? 'primed' : ''
+            } ${dimension === 'nether' && ghastState === 'shooting' ? 'shooting' : ''} ${
+              dimension === 'end' && endermanState === 'staring' ? 'staring' : ''
+            }`}
+            onClick={handleMobClick}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                handleCreeperClick();
+                handleMobClick();
               }
             }}
-            title="🐍 ¡Ssssss! Haz clic en el Creeper escondido"
           >
-            {creeperState === 'exploded' ? (
-              <div style={{ gridColumn: '1 / -1', gridRow: '1 / -1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <McItemIcon id="gunpowder" size={26} />
-              </div>
-            ) : (
-              CREEPER_FACE_PIXELS.map((px, i) => (
-                <span
-                  key={i}
-                  style={{ background: px ? '#111111' : 'transparent', width: '100%', height: '100%' }}
-                />
-              ))
+            {dimension === 'overworld' && (
+              creeperState === 'exploded' ? (
+                <div className="mc-mob-drop">
+                  <McItemIcon id="gunpowder" size={26} />
+                </div>
+              ) : (
+                CREEPER_FACE_PIXELS.map((px, i) => (
+                  <span
+                    key={i}
+                    style={{ background: px ? '#111111' : 'transparent', width: '100%', height: '100%' }}
+                  />
+                ))
+              )
+            )}
+            {dimension === 'nether' && (
+              ghastState === 'fired' ? (
+                <div className="mc-mob-drop">
+                  <McItemIcon id="ghast_tear" size={26} />
+                </div>
+              ) : (
+                GHAST_FACE_PIXELS.map((px, i) => {
+                  let bg = 'transparent';
+                  if (px === 1) bg = ghastState === 'shooting' ? '#ff2020' : '#2b2b2b';
+                  if (px === 2) bg = ghastState === 'shooting' ? '#ff6600' : '#888888';
+                  return <span key={i} style={{ background: bg, width: '100%', height: '100%' }} />;
+                })
+              )
+            )}
+            {dimension === 'end' && (
+              endermanState === 'teleported' ? (
+                <div className="mc-mob-drop">
+                  <McItemIcon id="ender_eye" size={26} />
+                </div>
+              ) : (
+                ENDERMAN_FACE_PIXELS.map((px, i) => {
+                  let bg = 'transparent';
+                  if (px === 1) bg = endermanState === 'staring' ? '#ff40ff' : '#c52be6';
+                  if (px === 2) bg = endermanState === 'staring' ? '#ffffff' : '#f68bff';
+                  return <span key={i} style={{ background: bg, width: '100%', height: '100%' }} />;
+                })
+              )
             )}
           </div>
 
@@ -3321,88 +3523,123 @@ const Minecraft = () => {
       </div>
 
       {/* =======================================================
+          WALL-MOUNTED REDSTONE DIMENSION LEVER
+         ======================================================= */}
+      <aside className="mc-wall-lever-wrap">
+        <button
+          type="button"
+          className={`mc-wall-bracket ${leverPulled ? 'lever-on' : ''}`}
+          onClick={handleWallLeverClick}
+          aria-label="Palanca en la pared"
+        >
+          <span className={`mc-wall-redstone-dot ${leverPulled ? 'active' : ''}`} />
+          <div className={`mc-wall-lever-handle ${leverPulled ? 'down' : 'up'}`}>
+            <McItemIcon id="lever" size={34} />
+          </div>
+        </button>
+      </aside>
+
+      {/* =======================================================
           AUTHENTIC 4-LAYER GEOLOGICAL GRASS & DIRT BLOCK FOOTER
          ======================================================= */}
       <footer className="mc-terrain-footer">
-        {/* Layer 0: Surface Flora & Interactive Props sitting on top of the Grass */}
+        {/* Layer 0: Surface Flora & Interactive Dimension Props */}
         <div className="mc-footer-flora-row">
           <img key={`f0-${dimension}`} src={`${ASSET_BASE}/block/${DIMENSIONS[dimension].flora[0]}.png`} alt="" className="mc-flora-sprite" />
           <img key={`f1-${dimension}`} src={`${ASSET_BASE}/block/${DIMENSIONS[dimension].flora[1]}.png`} alt="" className="mc-flora-sprite" />
 
-          {/* Interactive C418 Note Block: cada clic sube un semitono (afinación real) */}
-          <button
-            type="button"
-            className="mc-interactive-prop"
-            onClick={handleNoteBlockClick}
-            aria-label="Tocar bloque musical"
-            title="Cada clic sube un semitono. ¿Llegas a dos octavas?"
-          >
-            {noteParticles.map((n) => (
-              <span key={n.id} className="mc-floating-note" style={{ color: n.color, left: `calc(50% + ${n.x}px)` }}>
-                {n.symbol}
-              </span>
-            ))}
-            <span className="mc-prop-label">🎵 {NOTE_NAMES[noteSemi % 12]} · {noteSemi}/24</span>
-            <McItemIcon id="note_block" size={42} />
-          </button>
+          {/* Dimension-Specific Terrain Props */}
+          {dimension === 'overworld' && (
+            <>
+              {/* Overworld Note Block */}
+              <button
+                type="button"
+                className="mc-interactive-prop"
+                onClick={handleNoteBlockClick}
+                aria-label="Bloque musical"
+              >
+                {noteParticles.map((n) => (
+                  <span key={n.id} className="mc-floating-note" style={{ color: n.color, left: `calc(50% + ${n.x}px)` }}>
+                    {n.symbol}
+                  </span>
+                ))}
+                <McItemIcon id="note_block" size={42} />
+              </button>
 
-          <img key={`f2-${dimension}`} src={`${ASSET_BASE}/block/${DIMENSIONS[dimension].flora[2]}.png`} alt="" className="mc-flora-sprite" />
+              <img key={`f2-${dimension}`} src={`${ASSET_BASE}/block/${DIMENSIONS[dimension].flora[2]}.png`} alt="" className="mc-flora-sprite" />
 
-          {/* Interactive Edible Cake: se come de lado, bocado a bocado */}
-          <button
-            type="button"
-            className="mc-interactive-prop"
-            onClick={handleCakeClick}
-            aria-label="Comer pastel"
-            title={cakeGone ? 'Se acabó. Era mentira, de todos modos.' : 'Comer pastel'}
-          >
-            <span className="mc-prop-label">
-              {cakeGone ? '🥄 La tarta era mentira' : cakeBites === 0 ? '🎂 Pastel' : `🎂 Quedan ${7 - cakeBites}/7`}
-            </span>
-            <div
-              className="mc-cake-wrap"
-              style={{ clipPath: `inset(0 0 0 ${(cakeBites / 7) * 100}%)`, opacity: cakeGone ? 0 : 1 }}
-            >
-              <McItemIcon id="cake" size={42} />
-            </div>
-          </button>
+              {/* Overworld Cake */}
+              <button
+                type="button"
+                className="mc-interactive-prop"
+                onClick={handleCakeClick}
+                aria-label="Pastel"
+              >
+                <div
+                  className="mc-cake-wrap"
+                  style={{ clipPath: `inset(0 0 0 ${(cakeBites / 7) * 100}%)`, opacity: cakeGone ? 0 : 1 }}
+                >
+                  <McItemIcon id="cake" size={42} />
+                </div>
+              </button>
+            </>
+          )}
+
+          {dimension === 'nether' && (
+            <>
+              {/* Nether Respawn Anchor */}
+              <button
+                type="button"
+                className={`mc-interactive-prop mc-respawn-anchor ${anchorBlown ? 'blown' : ''}`}
+                onClick={handleAnchorClick}
+                aria-label="Nexo de reaparición"
+              >
+                <div className="mc-anchor-charges-bar">
+                  {[0, 1, 2, 3].map((idx) => (
+                    <span
+                      key={idx}
+                      className={`mc-anchor-charge-pip ${anchorCharges > idx ? 'charged' : ''}`}
+                    />
+                  ))}
+                </div>
+                <McItemIcon id={anchorBlown ? 'crying_obsidian' : 'respawn_anchor'} size={42} />
+              </button>
+
+              <img key={`f2-${dimension}`} src={`${ASSET_BASE}/block/${DIMENSIONS[dimension].flora[2]}.png`} alt="" className="mc-flora-sprite" />
+            </>
+          )}
+
+          {dimension === 'end' && (
+            <>
+              {/* The End Dragon Egg */}
+              <button
+                type="button"
+                className="mc-interactive-prop mc-dragon-egg-prop"
+                onClick={handleDragonEggClick}
+                style={{
+                  transform: `translate(${eggOffset.x}px, ${eggOffset.y}px)`,
+                  transition: 'transform 0.15s cubic-bezier(0.2, 0.9, 0.3, 1.2)'
+                }}
+                aria-label="Huevo de la dragona"
+              >
+                <McItemIcon id="dragon_egg" size={42} />
+              </button>
+
+              <img key={`f2-${dimension}`} src={`${ASSET_BASE}/block/${DIMENSIONS[dimension].flora[2]}.png`} alt="" className="mc-flora-sprite" />
+            </>
+          )}
 
           <img key={`f3-${dimension}`} src={`${ASSET_BASE}/block/${DIMENSIONS[dimension].flora[3]}.png`} alt="" className="mc-flora-sprite" />
-
-          {/* Secret Redstone Lever: portal real hacia el Nether y de vuelta */}
-          <button
-            type="button"
-            className="mc-interactive-prop"
-            onClick={handleLeverClick}
-            aria-label="Cambiar entre Overworld y Nether"
-            title={`Una palanca. Dimensión actual: ${DIMENSIONS[dimension].short}. ¿Qué podría salir mal?`}
-          >
-            <span className="mc-prop-label">
-              {DIMENSIONS[dimension].label}
-            </span>
-            <div style={{ transform: dimension === 'overworld' ? 'none' : 'scaleX(-1)', transition: 'transform 0.18s ease' }}>
-              <McItemIcon id="lever" size={42} />
-            </div>
-          </button>
         </div>
 
         {/* Layer 1: Tiled 64px Grass Block Top Strip */}
         <div className="mc-footer-grass-strip" />
 
-        {/* Layer 2: Tiled Dirt Block Body + Interactive Buried Ores Mining Mini-Game */}
+        {/* Layer 2: Tiled Dirt Block Body + Organic Subterranean Ores Stratum */}
         <div className="mc-footer-dirt-body">
           <div className="mc-footer-inner">
-            {/* Interactive Mining Mini-Game */}
-            <div className="mc-mining-zone">
-              <div>
-                <h4 style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '0.82rem', color: '#ffff55', margin: '0 0 0.35rem 0', textShadow: '2px 2px 0 #000' }}>
-                  ⛏️ PICA LOS MINERALES
-                </h4>
-                <p style={{ margin: 0, color: '#f0e2d0', fontSize: '1.18rem' }}>
-                  Dale 5 clics a un bloque para romperlo.
-                </p>
-              </div>
-
+            {/* Organic Subterranean Ores: Natural Vein (no obvious tutorial text) */}
+            <div className="mc-subterranean-stratum">
               <div className="mc-ores-row">
                 {BURIED_ORES.map((ore) => {
                   const st = oreStates[ore.id] || { hits: 0, broken: false, toast: '' };
@@ -3412,8 +3649,10 @@ const Minecraft = () => {
                       key={ore.id}
                       role="button"
                       tabIndex={0}
-                      aria-label={st.broken ? `${ore.label} regenerándose` : `Picar ${ore.label}, golpe ${st.hits} de 5`}
-                      className={`mc-ore-block ${ore.glow && !st.broken ? 'redstone-glow' : ''} ${st.hits > 0 && !st.broken ? (st.hits % 2 ? 'shake-a' : 'shake-b') : ''}`}
+                      aria-label={st.broken ? 'Bloque regenerándose' : 'Mineral'}
+                      className={`mc-ore-block ${ore.glow && !st.broken ? 'redstone-glow' : ''} ${
+                        st.hits > 0 && !st.broken ? (st.hits % 2 ? 'shake-a' : 'shake-b') : ''
+                      }`}
                       style={{ backgroundImage: `url('${ASSET_BASE}/${bgTex}')` }}
                       onClick={(e) => handleOreClick(ore, e)}
                       onKeyDown={(e) => {
@@ -3422,12 +3661,13 @@ const Minecraft = () => {
                           handleOreClick(ore, e);
                         }
                       }}
-                      title={st.broken ? 'Regenerando...' : `Picar ${ore.label} (${st.hits}/5)`}
                     >
                       {st.hits > 0 && !st.broken && (
                         <div
                           className="mc-ore-damage"
-                          style={{ backgroundImage: `url('${ASSET_BASE}/block/destroy_stage_${Math.min(9, st.hits * 2 - 1)}.png')` }}
+                          style={{
+                            backgroundImage: `url('${ASSET_BASE}/block/destroy_stage_${Math.min(9, st.hits * 2 - 1)}.png')`
+                          }}
                         />
                       )}
                       {st.toast && <span className="mc-ore-toast">{st.toast}</span>}
@@ -3435,30 +3675,6 @@ const Minecraft = () => {
                     </div>
                   );
                 })}
-
-                <div style={{ padding: '0.45rem 0.85rem', background: 'rgba(0,0,0,0.65)', border: '2px solid #80ff20', color: '#80ff20', fontFamily: "'Press Start 2P', monospace", fontSize: '0.72rem' }}>
-                  ⛏️ Picados: {minedTotal}
-                </div>
-              </div>
-            </div>
-
-            {/* Selector de dimensión (se recuerda entre visitas) */}
-            <div className="mc-dim-picker" role="radiogroup" aria-label="Dimensión">
-              <div className="mc-dim-head">🌍 DIMENSIÓN</div>
-              <div className="mc-dim-options">
-                {DIMENSION_ORDER.map((key) => (
-                  <button
-                    key={key}
-                    type="button"
-                    role="radio"
-                    aria-checked={dimension === key}
-                    className={`mc-dim-chip dim-${key} ${dimension === key ? 'active' : ''}`}
-                    onClick={() => goDimension(key)}
-                  >
-                    <McItemIcon id={DIMENSIONS[key].chip} size={22} />
-                    <span>{DIMENSIONS[key].short}</span>
-                  </button>
-                ))}
               </div>
             </div>
 
@@ -3475,12 +3691,12 @@ const Minecraft = () => {
                       key={egg.id}
                       className={`mc-secret-slot ${ok ? 'found' : ''}`}
                       tabIndex={0}
-                      aria-label={ok ? `Secreto: ${egg.name}` : `Secreto bloqueado. Pista: ${egg.hint}`}
+                      aria-label={ok ? `Secreto: ${egg.name}` : `Secreto sin descubrir`}
                     >
                       {ok ? <McItemIcon id={egg.icon} size={28} /> : <span className="mc-secret-q">?</span>}
                       <span className="mc-secret-tip" role="tooltip">
                         <b>{ok ? egg.name : '???'}</b>
-                        {!ok && egg.hint}
+                        {ok ? '¡Descubierto!' : 'Secreto sin descubrir'}
                       </span>
                     </div>
                   );
