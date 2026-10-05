@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Server, HardDrive, Lock, Cpu, Terminal, Home, Activity, Gamepad2 } from 'lucide-react';
+import { Server, HardDrive, Lock, Cpu, Terminal, Home, Activity, Gamepad2, Monitor, Shield, Copy, Check, Bot, KeyRound } from 'lucide-react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { useTilt } from '../hooks/usePointerFx';
@@ -9,6 +9,22 @@ gsap.registerPlugin(useGSAP);
 import './Portal.css';
 
 const services = [
+  {
+    name: 'Escritorio & VPN SSL (GPU 60FPS)',
+    description: 'Navegador y Terminal Remota sobre SSL (Radeon Vega 11 VAAPI)',
+    url: 'https://desktop.hectorajm.dpdns.org',
+    icon: <Monitor size={28} />,
+    color: '#8b5cf6',
+    status: 'online'
+  },
+  {
+    name: 'Antigravity Remote Agent',
+    description: 'Agente CLI (agy) Conectado al Homelab para Pruebas y Control Remoto',
+    url: 'https://antigravity.google.com',
+    icon: <Bot size={28} />,
+    color: '#ec4899',
+    status: 'online'
+  },
   {
     name: 'Minecraft Live Map & Avance',
     description: 'Mapa 3D en Vivo, Progreso del Mundo, Estadísticas y Modpack',
@@ -28,16 +44,16 @@ const services = [
   },
   {
     name: 'Portainer',
-    description: 'Gestión de Contenedores y Docker',
-    url: 'https://portainer.hectorajm.dpdns.org',
+    description: 'Gestión de Contenedores y Docker (Red Local / Escritorio SSL)',
+    url: 'http://192.168.1.69:9000',
     icon: <Server size={28} />,
     color: '#0db7ed',
     status: 'online'
   },
   {
     name: 'Uptime Kuma',
-    description: 'Monitoreo de Estado y Alertas en Tiempo Real',
-    url: 'https://uptime.hectorajm.dpdns.org',
+    description: 'Monitoreo de Estado y Alertas (Red Local / Escritorio SSL)',
+    url: 'http://192.168.1.69:3001',
     icon: <Activity size={28} />,
     color: '#00e676',
     status: 'online'
@@ -47,6 +63,37 @@ const services = [
 const Portal = () => {
   const container = useRef(null);
   const [stats, setStats] = useState(null);
+  const [vpnPassword, setVpnPassword] = useState('');
+  const [vpnKeys, setVpnKeys] = useState(null);
+  const [vpnError, setVpnError] = useState('');
+  const [copiedKey, setCopiedKey] = useState(null);
+
+  const unlockVpnKeys = async (e) => {
+    e.preventDefault();
+    setVpnError('');
+    try {
+      const res = await fetch('https://api.hectorajm.dpdns.org/api/unlock-keys', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: vpnPassword })
+      });
+      if (!res.ok) {
+        setVpnError('Clave incorrecta');
+        return;
+      }
+      const data = await res.json();
+      setVpnKeys(data);
+      setVpnPassword('');
+    } catch {
+      setVpnError('Error de conexión');
+    }
+  };
+
+  const copyUri = (key, text) => {
+    navigator.clipboard.writeText(text);
+    setCopiedKey(key);
+    setTimeout(() => setCopiedKey(null), 2000);
+  };
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -66,14 +113,11 @@ const Portal = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // NUEVO: inclinación 3D + brillo en las tarjetas de servicio (solo desktop)
   useTilt(container, '.service-card', { max: 6 });
 
   useGSAP(() => {
     const tl = gsap.timeline();
 
-    // NUEVO: se quitó la animación de .security-badge (ya no existe en el markup
-    // y generaba un warning de GSAP en consola)
     tl.from('.portal-title', { y: 20, opacity: 0, duration: 0.6, ease: 'power3.out' })
       .from('.portal-subtitle', { y: 20, opacity: 0, duration: 0.6, ease: 'power3.out' }, '-=0.4')
       .from('.system-status', { scale: 0.95, opacity: 0, duration: 0.6, ease: 'power3.out' }, '-=0.2');
@@ -90,7 +134,6 @@ const Portal = () => {
 
   return (
     <div className="portal-page" ref={container}>
-      {/* NUEVO: fondo mesh decorativo (CSS puro) */}
       <div className="portal-bg" aria-hidden="true" />
 
       <div className="container">
@@ -132,6 +175,45 @@ const Portal = () => {
               <p className="status-label">Uptime</p>
               <p className="status-value active-status" style={{ fontSize: '1rem' }}>{stats ? stats.uptime : '...'}</p>
             </div>
+          </div>
+        </div>
+
+        <div className="vpn-quick-bar glass-panel">
+          <div className="vpn-quick-info">
+            <Shield size={22} className="shield-icon" />
+            <div>
+              <strong>Túneles VPN Privados (Xray VLESS + BBR)</strong>
+              <p>Protegido con clave en el servidor. Ninguna llave ni UUID está expuesta públicamente en la web.</p>
+            </div>
+          </div>
+          <div className="vpn-quick-actions">
+            {!vpnKeys ? (
+              <form className="vpn-unlock-form" onSubmit={unlockVpnKeys}>
+                <input
+                  type="password"
+                  className="vpn-pass-input"
+                  placeholder="Clave del Homelab..."
+                  value={vpnPassword}
+                  onChange={(e) => setVpnPassword(e.target.value)}
+                />
+                <button type="submit" className="vpn-copy-btn">
+                  <KeyRound size={16} />
+                  <span>Desbloquear Llaves VPN</span>
+                </button>
+                {vpnError && <span className="vpn-error-msg">{vpnError}</span>}
+              </form>
+            ) : (
+              <>
+                <button type="button" className="vpn-copy-btn" onClick={() => copyUri('ssl', vpnKeys.ssl)}>
+                  {copiedKey === 'ssl' ? <Check size={16} /> : <Copy size={16} />}
+                  <span>{copiedKey === 'ssl' ? 'Copiado SSL 443' : 'Copiar VPN Inyección SSL (Cloudflare 443)'}</span>
+                </button>
+                <button type="button" className="vpn-copy-btn gaming" onClick={() => copyUri('gaming', vpnKeys.gaming)}>
+                  {copiedKey === 'gaming' ? <Check size={16} /> : <Copy size={16} />}
+                  <span>{copiedKey === 'gaming' ? 'Copiado Gaming XHTTP' : 'Copiar VPN Gaming (XHTTP H2/H3)'}</span>
+                </button>
+              </>
+            )}
           </div>
         </div>
 

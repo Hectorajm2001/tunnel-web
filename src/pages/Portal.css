@@ -279,3 +279,94 @@
     animation: none;
   }
 }
+
+.vpn-quick-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.vpn-quick-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.vpn-quick-info strong {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.vpn-quick-info p {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.vpn-quick-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.vpn-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  background: rgba(139, 92, 246, 0.15);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.vpn-copy-btn:hover {
+  background: rgba(139, 92, 246, 0.28);
+  transform: translateY(-1px);
+}
+
+.vpn-copy-btn.gaming {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.15);
+}
+
+.vpn-copy-btn.gaming:hover {
+  background: rgba(16, 185, 129, 0.28);
+}
+
+.vpn-unlock-form {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.vpn-pass-input {
+  padding: 0.55rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.vpn-pass-input:focus {
+  border-color: var(--accent-purple);
+}
+
+.vpn-error-msg {
+  color: #ef4444;
+  font-size: 0.8rem;
+}
+
+
