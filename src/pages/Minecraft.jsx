@@ -1104,7 +1104,8 @@ const Minecraft = () => {
   const [endermanState, setEndermanState] = useState('idle'); // 'idle' | 'staring' | 'teleported'
   const [anchorCharges, setAnchorCharges] = useState(0); // 0..4
   const [anchorBlown, setAnchorBlown] = useState(false);
-  const [eggOffset, setEggOffset] = useState({ x: 0, y: 0 });
+  const [eggTeleported, setEggTeleported] = useState(false);
+  const [eggRandomPos, setEggRandomPos] = useState({ x: 50, y: 50 });
   const [eggTaps, setEggTaps] = useState(0);
   const [leverPulled, setLeverPulled] = useState(false);
   const [dollEasterEgg, setDollEasterEgg] = useState('normal'); // 'normal' | 'dinnerbone' | 'jeb'
@@ -1119,6 +1120,10 @@ const Minecraft = () => {
   const netherMode = dimension === 'nether';
   useEffect(() => {
     try { localStorage.setItem('mc_dimension', dimension); } catch {}
+    if (dimension !== 'end') {
+      setEggTeleported(false);
+      setEggTaps(0);
+    }
   }, [dimension]);
   const [cakeBites, setCakeBites] = useState(0);
   const [noteParticles, setNoteParticles] = useState([]);
@@ -1679,8 +1684,8 @@ const Minecraft = () => {
     playMcSfx('teleport');
     spawnBurstAt(cx, cy, {
       colors: ['#bf00ff', '#e066ff', '#8a2be2', '#220033', '#ffffff'],
-      count: 22,
-      spread: 75
+      count: 24,
+      spread: 85
     });
 
     const nextTaps = eggTaps + 1;
@@ -1690,19 +1695,20 @@ const Minecraft = () => {
       playMcSfx('achievement');
       spawnBurstAt(cx, cy, {
         colors: ['#bf00ff', '#e066ff', '#ffd700', '#ffffff', '#ff69b4'],
-        count: 44,
-        spread: 180
+        count: 48,
+        spread: 220
       });
       unlockEgg('dragon_egg');
       setTimeout(() => {
         setEggTaps(0);
-        setEggOffset({ x: 0, y: 0 });
-      }, 4500);
+        setEggTeleported(false);
+      }, 5000);
     } else {
-      const dir = nextTaps === 1 ? -1 : 1;
-      const newX = dir * (28 + Math.random() * 45);
-      const newY = (Math.random() - 0.5) * 20;
-      setEggOffset({ x: newX, y: newY });
+      // Teleport to a random place on the web screen (10%..80% X, 12%..75% Y)
+      const rx = Math.floor(10 + Math.random() * 72);
+      const ry = Math.floor(12 + Math.random() * 65);
+      setEggRandomPos({ x: rx, y: ry });
+      setEggTeleported(true);
     }
   };
 
@@ -2402,7 +2408,7 @@ const Minecraft = () => {
                     type="button"
                     onClick={cycleDollEasterEgg}
                     className="mc-btn gold"
-                    title="Easter Egg: Girar modelo 3D como Dinnerbone o arcoíris jeb_"
+                    aria-label="Etiqueta de nombre"
                   >
                     <McItemIcon id="name_tag" size={18} />
                     <span>
@@ -2446,11 +2452,13 @@ const Minecraft = () => {
                           )}
                         </div>
 
-                        {/* Black 3D Player Doll Box (Click to toggle Dinnerbone / jeb_ Easter Egg!) */}
+                        {/* Black 3D Player Doll Box (Click to toggle Dinnerbone / jeb_) */}
                         <div
                           className="mc-doll-box"
                           onClick={cycleDollEasterEgg}
-                          title="Haz clic en el personaje para activar el Easter Egg Dinnerbone / jeb_"
+                          role="button"
+                          tabIndex={0}
+                          aria-label="Modelo de jugador"
                         >
                           <span className="mc-doll-nametag">
                             {dollEasterEgg === 'dinnerbone'
@@ -3523,19 +3531,39 @@ const Minecraft = () => {
       </div>
 
       {/* =======================================================
-          WALL-MOUNTED REDSTONE DIMENSION LEVER
+          ROAMING DRAGON EGG (TELEPORTS RANDOM PLACES ON THE WEB)
+         ======================================================= */}
+      {dimension === 'end' && eggTeleported && (
+        <button
+          type="button"
+          className="mc-teleported-dragon-egg"
+          style={{
+            left: `${eggRandomPos.x}vw`,
+            top: `${eggRandomPos.y}vh`
+          }}
+          onClick={handleDragonEggClick}
+          aria-label="Huevo de la dragona teletransportado"
+        >
+          <McItemIcon id="dragon_egg" size={48} />
+        </button>
+      )}
+
+      {/* =======================================================
+          WALL-MOUNTED REDSTONE DIMENSION LEVER (AUTHENTIC SPRITE)
          ======================================================= */}
       <aside className="mc-wall-lever-wrap">
         <button
           type="button"
-          className={`mc-wall-bracket ${leverPulled ? 'lever-on' : ''}`}
+          className="mc-wall-lever-btn"
           onClick={handleWallLeverClick}
           aria-label="Palanca en la pared"
         >
-          <span className={`mc-wall-redstone-dot ${leverPulled ? 'active' : ''}`} />
-          <div className={`mc-wall-lever-handle ${leverPulled ? 'down' : 'up'}`}>
-            <McItemIcon id="lever" size={34} />
-          </div>
+          <img
+            src={leverPulled ? '/assets/lever_wall_down.png' : '/assets/lever_wall_up.png'}
+            alt="Palanca"
+            className="mc-wall-lever-img"
+            draggable={false}
+          />
         </button>
       </aside>
 
@@ -3611,19 +3639,17 @@ const Minecraft = () => {
 
           {dimension === 'end' && (
             <>
-              {/* The End Dragon Egg */}
-              <button
-                type="button"
-                className="mc-interactive-prop mc-dragon-egg-prop"
-                onClick={handleDragonEggClick}
-                style={{
-                  transform: `translate(${eggOffset.x}px, ${eggOffset.y}px)`,
-                  transition: 'transform 0.15s cubic-bezier(0.2, 0.9, 0.3, 1.2)'
-                }}
-                aria-label="Huevo de la dragona"
-              >
-                <McItemIcon id="dragon_egg" size={42} />
-              </button>
+              {/* The End Dragon Egg (at home in the terrain footer if not teleported) */}
+              {!eggTeleported && (
+                <button
+                  type="button"
+                  className="mc-interactive-prop mc-dragon-egg-prop"
+                  onClick={handleDragonEggClick}
+                  aria-label="Huevo de la dragona"
+                >
+                  <McItemIcon id="dragon_egg" size={42} />
+                </button>
+              )}
 
               <img key={`f2-${dimension}`} src={`${ASSET_BASE}/block/${DIMENSIONS[dimension].flora[2]}.png`} alt="" className="mc-flora-sprite" />
             </>
