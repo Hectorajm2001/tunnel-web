@@ -3668,8 +3668,47 @@ button.mc-interactive-prop {
   justify-content: space-between;
   gap: 1rem;
 }
-.mc-secrets-head { font-family: 'Press Start 2P', monospace; font-size: 0.78rem; color: #e08cff; text-shadow: 2px 2px 0 #000; }
-.mc-secrets-head b { color: #ffff55; margin-left: 0.4rem; }
+.mc-secrets-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+}
+.mc-secrets-head-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.78rem;
+  color: #e08cff;
+  text-shadow: 2px 2px 0 #000;
+}
+.mc-secrets-head-left b { color: #ffff55; margin-left: 0.4rem; }
+.mc-secrets-complete-tag {
+  display: inline-block;
+  background: #ffaa00;
+  color: #111;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.55rem;
+  padding: 3px 6px;
+  border-radius: 2px;
+  animation: pulse 1.5s infinite;
+  text-shadow: none;
+}
+.mc-secrets-claim-btn {
+  font-size: 0.72rem !important;
+  padding: 6px 14px !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.mc-secrets-hint {
+  font-size: 1.15rem;
+  color: #d0b0ff;
+  font-style: italic;
+}
 .mc-secrets-grid { display: flex; flex-wrap: wrap; gap: 10px; }
 .mc-secret-slot {
   position: relative;
@@ -3911,3 +3950,406 @@ button.mc-interactive-prop {
 .mc-dim-chip.dim-overworld.active { background: #2f6b34; border-color: #1b3d20; border-top-color: #7de87d; border-left-color: #7de87d; }
 .mc-dim-chip.dim-nether.active { background: #7a2a1c; border-color: #3d0f0a; border-top-color: #ff9a6b; border-left-color: #ff9a6b; }
 .mc-dim-chip.dim-end.active { background: #4a2a82; border-color: #1c0e3a; border-top-color: #cfa8ff; border-left-color: #cfa8ff; }
+
+/* =========================================================
+   CÁMARA DE PREMIOS MISTERIOSOS (COMPLETION EASTER EGG PRIZE)
+   ========================================================= */
+.mc-reward-modal-box {
+  max-width: 780px !important;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.mc-reward-modal-body {
+  padding: 1.25rem 1.5rem !important;
+}
+
+.mc-gift-header-icon {
+  font-size: 1.2rem;
+  margin-right: 4px;
+}
+
+.mc-reward-instructions {
+  color: #2a2a2a;
+  font-size: 1.25rem;
+  line-height: 1.35;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* 4 Mystery Cards Grid */
+.mc-mystery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 680px) {
+  .mc-mystery-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mc-mystery-card {
+  background: #8b8b8b;
+  border-top: 3px solid #ffffff;
+  border-left: 3px solid #ffffff;
+  border-right: 3px solid #373737;
+  border-bottom: 3px solid #373737;
+  outline: 2px solid #000000;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
+  position: relative;
+}
+
+.mc-mystery-card:hover {
+  background: #a0a0a0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+}
+
+.mc-mystery-card-box {
+  width: 70px;
+  height: 70px;
+  background: #373737;
+  border-top: 3px solid #000000;
+  border-left: 3px solid #000000;
+  border-right: 3px solid #8b8b8b;
+  border-bottom: 3px solid #8b8b8b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.mc-mystery-gift-icon {
+  font-size: 38px;
+  line-height: 1;
+  display: inline-block;
+  animation: mcGiftFloat 2.2s ease-in-out infinite alternate;
+}
+
+@keyframes mcGiftFloat {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-3px) scale(1.08); }
+}
+
+.mc-mystery-card-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.65rem;
+  line-height: 1.35;
+  color: #ffff55;
+  text-shadow: 1px 1px 0 #000000;
+  margin-bottom: 8px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mc-mystery-card-desc {
+  font-size: 1.15rem;
+  line-height: 1.25;
+  color: #ffffff;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.85);
+  margin-bottom: 12px;
+  flex: 1;
+  font-style: italic;
+}
+
+.mc-mystery-choose-btn {
+  width: 100%;
+  font-size: 0.72rem !important;
+  padding: 8px 10px !important;
+}
+
+/* Confirmation View */
+.mc-reward-confirm-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mc-confirm-box-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #555555;
+  border: 2px solid #222222;
+  padding: 10px 14px;
+}
+
+.mc-confirm-gift-icon {
+  font-size: 2rem;
+}
+
+.mc-confirm-box-badge h4 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.75rem;
+  color: #ffff55;
+  text-shadow: 1px 1px 0 #000;
+  margin: 0;
+}
+
+.mc-confirm-quote {
+  background: rgba(0, 0, 0, 0.15);
+  border-left: 4px solid #ffaa00;
+  padding: 10px 14px;
+  margin: 0;
+  font-size: 1.2rem;
+  color: #222222;
+  font-style: italic;
+  line-height: 1.3;
+}
+
+.mc-confirm-warning {
+  background: #ffeedd;
+  border: 2px dashed #dd7700;
+  padding: 8px 12px;
+  color: #883300;
+  font-size: 1.15rem;
+}
+
+.mc-confirm-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.mc-confirm-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.65rem;
+  color: #333333;
+}
+
+.mc-confirm-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mc-confirm-logged-player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.mc-confirm-avatar {
+  width: 28px;
+  height: 28px;
+  image-rendering: pixelated;
+  border: 1px solid #000;
+}
+
+.mc-confirm-input {
+  flex: 1;
+  background: #ffffff;
+  border-top: 2px solid #373737;
+  border-left: 2px solid #373737;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  outline: 2px solid #000;
+  padding: 6px 10px;
+  font-family: 'VT323', monospace;
+  font-size: 1.35rem;
+  color: #000000;
+}
+
+.mc-confirm-logged-tag {
+  background: #55ff55;
+  color: #004400;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  padding: 4px 6px;
+  white-space: nowrap;
+}
+
+.mc-confirm-help {
+  color: #555555;
+  font-size: 1.05rem;
+}
+
+.mc-confirm-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* Suspense Unboxing View */
+.mc-reward-unboxing-view {
+  padding: 2.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+.mc-gift-crate-animating {
+  position: relative;
+}
+
+.mc-big-gift-icon.shake {
+  font-size: 80px;
+  display: inline-block;
+  animation: mcGiftShake 0.4s ease-in-out infinite;
+}
+
+@keyframes mcGiftShake {
+  0% { transform: rotate(0deg) scale(1.1); }
+  25% { transform: rotate(-10deg) scale(1.15); }
+  50% { transform: rotate(0deg) scale(1.12); }
+  75% { transform: rotate(10deg) scale(1.18); }
+  100% { transform: rotate(0deg) scale(1.1); }
+}
+
+.mc-unboxing-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.85rem;
+  color: #ffff55;
+  text-shadow: 2px 2px #000;
+  margin: 0;
+}
+
+.mc-unboxing-desc {
+  font-size: 1.25rem;
+  color: #333333;
+  margin: 0;
+}
+
+/* Claimed / Revealed View */
+.mc-reward-claimed-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+.mc-reward-badge-pill {
+  background: #ffaa00;
+  color: #111111;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.6rem;
+  padding: 4px 10px;
+  border-radius: 3px;
+  text-shadow: none;
+  font-weight: bold;
+}
+
+.mc-reward-claimed-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.82rem;
+  color: #2b2b2b;
+  margin: 0;
+}
+
+.mc-reward-claimed-subtitle {
+  font-size: 1.25rem;
+  color: #444444;
+  margin: 0;
+}
+
+.mc-reward-display-showcase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.mc-reward-item-frame {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  background: #373737;
+  border-top: 4px solid #000000;
+  border-left: 4px solid #000000;
+  border-right: 4px solid #ffffff;
+  border-bottom: 4px solid #ffffff;
+  outline: 3px solid #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 16px rgba(255, 170, 0, 0.4);
+}
+
+.mc-reward-count-badge {
+  position: absolute;
+  right: 4px;
+  bottom: 2px;
+  font-family: 'VT323', monospace;
+  font-size: 1.6rem;
+  color: #ffffff;
+  text-shadow: 2px 2px #000000;
+}
+
+/* Authentic Minecraft Tooltip Box */
+.mc-reward-lore-box {
+  background: #100010;
+  border: 2px solid #280058;
+  outline: 2px solid #100010;
+  box-shadow: 0 0 14px rgba(40, 0, 88, 0.6);
+  padding: 14px 18px;
+  text-align: left;
+  width: 100%;
+  max-width: 480px;
+}
+
+.mc-reward-real-name {
+  color: #ff55ff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.8rem;
+  text-shadow: 2px 2px #3f153f;
+  margin-bottom: 8px;
+}
+
+.mc-reward-enchants {
+  margin-bottom: 8px;
+}
+
+.mc-reward-enchant-line {
+  color: #55ffff;
+  font-size: 1.25rem;
+  text-shadow: 1px 1px #003f3f;
+}
+
+.mc-reward-lore-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-top: 1px dashed #440066;
+  padding-top: 8px;
+}
+
+.mc-reward-lore-line {
+  color: #aa00aa;
+  font-style: italic;
+  font-size: 1.2rem;
+  text-shadow: 1px 1px #2a002a;
+}
+
+.mc-reward-status-banner {
+  background: #e8f9e8;
+  border: 2px solid #55aa55;
+  color: #1b5e20;
+  padding: 8px 14px;
+  font-size: 1.15rem;
+  width: 100%;
+}
+
+.mc-reward-modal-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}

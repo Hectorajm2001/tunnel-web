@@ -213,7 +213,71 @@ const SECRET_EGGS = [
   { id: 'doll', icon: 'name_tag', name: 'Nombre Raro' }
 ];
 
+// Opciones de recompensa misteriosa de completista (4 premios engañosos e irónicos)
+const MYSTERY_REWARDS = [
+  {
+    id: 'rod',
+    boxNumber: 1,
+    title: 'Caja Misteriosa I: "El Cetro de Plasma Astral"',
+    boxDesc: 'Forjado en el núcleo de un cuásar colapsado. Es una pieza cilíndrica, rígida y extraordinariamente luminosa que expulsa ondas de choque cinéticas para mantener a raya a cualquier invasor. Ideal para aventureros de temple firme que aprecian sujetar algo largo, duro y resplandeciente con una sola mano.',
+    realName: 'La Vara Gruesa',
+    itemId: 'end_rod',
+    count: 1,
+    enchants: ['Empuje II (Knockback II)'],
+    lore: [
+      '"Para el que le gusta tener algo largo, duro y brillante en la mano."',
+      '"No hace daño, pero impone respeto al sacarlo."'
+    ]
+  },
+  {
+    id: 'eggs',
+    boxNumber: 2,
+    title: 'Caja Misteriosa II: "Orbes Gemelos del Génesis"',
+    boxDesc: 'Dos artefactos biológicos milenarios de pureza absoluta que albergan el misterio primordial de la existencia. Por su fragilidad extrema, se exige manipular este par con la máxima delicadeza y paciencia entre ambas manos para evitar que se rompan antes de ver su fruto.',
+    realName: 'El Paquete Completo',
+    itemId: 'egg',
+    count: 2,
+    enchants: [],
+    lore: [
+      '"Tanto tocar huevos para terminar con este par en la mano."',
+      '"Sabe a decepción, pero alimenta el ego."'
+    ]
+  },
+  {
+    id: 'stick',
+    boxNumber: 3,
+    title: 'Caja Misteriosa III: "La Vara de Fuego del Purgatorio"',
+    boxDesc: 'Imbuida con las llamas eternas del inframundo profundo. La leyenda ancestral reza que su calor abrasador no deja indiferente a nadie que la experimente de cerca, demostrando que, a fin de cuentas, a nadie le sienta mal recibir un buen palo.',
+    realName: 'Un Buen Palo',
+    itemId: 'stick',
+    count: 1,
+    enchants: ['Aspecto Ígneo I (Fire Aspect I)'],
+    lore: [
+      '"Dicen que quien busca encuentra, y al final a nadie le amarga un buen palo."',
+      '"Sal a repartir leña con cariño."'
+    ]
+  },
+  {
+    id: 'hoe',
+    boxNumber: 4,
+    title: 'Caja Misteriosa IV: "La Cosechadora del Abismo Negro"',
+    boxDesc: 'La aleación más pesada, oscura y costosa jamás forjada por herreros oscuros. Su apetito es voraz e insaciable: destroza superficies a velocidad sobrehumana sin jamás desgastarse. Representa la codicia desmedida y el placer culpable que todos ansían pero nadie se atreve a admitir.',
+    realName: 'La Golosa',
+    itemId: 'netherite_hoe',
+    count: 1,
+    enchants: ['Eficiencia V', 'Irrompibilidad III'],
+    lore: [
+      '"Gastaste horas en secretos para recibir la herramienta más cara e inútil de Minecraft."',
+      '"Disfruta arando tierra con estilo."'
+    ]
+  }
+];
+
 const ITEM_TEXTURE_ALIASES = {
+  end_rod: 'block/end_rod.png',
+  stick: 'item/stick.png',
+  egg: 'item/egg.png',
+  netherite_hoe: 'item/netherite_hoe.png',
   ghast_tear: 'item/ghast_tear.png',
   nether_star: 'item/nether_star.png',
   gunpowder: 'item/gunpowder.png',
@@ -1159,6 +1223,35 @@ const Minecraft = () => {
     notifyDeaths: true
   });
 
+  // Recompensas Misteriosas (Completista de Easter Eggs)
+  const [rewardModalOpen, setRewardModalOpen] = useState(false);
+  const [selectedRewardId, setSelectedRewardId] = useState(null);
+  const [claimPlayerName, setClaimPlayerName] = useState(() => {
+    try {
+      const stored = localStorage.getItem('mc_player_session');
+      return stored ? JSON.parse(stored)?.username || '' : '';
+    } catch {
+      return '';
+    }
+  });
+  const [claimLoading, setClaimLoading] = useState(false);
+  const [claimError, setClaimError] = useState('');
+  const [unboxingStage, setUnboxingStage] = useState('idle'); // 'idle' | 'shaking' | 'revealed'
+  const [claimedReward, setClaimedReward] = useState(() => {
+    try {
+      const raw = localStorage.getItem('mc_claimed_reward');
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    if (playerUser?.username && !claimPlayerName) {
+      setClaimPlayerName(playerUser.username);
+    }
+  }, [playerUser?.username]);
+
   useEffect(() => {
     if (!playerUser?.token) return;
     if (playerUser.settings) {
@@ -1508,16 +1601,78 @@ const Minecraft = () => {
     if (next.length === SECRET_EGGS.length) {
       setTimeout(() => {
         startXpRain();
+        playMcSfx('achievement');
         pushToast({
           icon: 'dragon_egg',
-          title: 'Completista',
-          desc: 'Encontraste todos los secretos. Eres leyenda.',
+          title: '★ ¡COMPLETISTA SUPREMO! ★',
+          desc: '¡Descubriste todos los secretos! Tienes una recompensa misteriosa esperándote.',
           kind: 'challenge',
           label: '¡Desafío completado!'
         });
+        setRewardModalOpen(true);
       }, 1600);
     }
     return true;
+  };
+
+  const handleClaimReward = async (rewardId) => {
+    const target = (claimPlayerName || playerUser?.username || '').trim().replace(/^\./, '');
+    if (!target) {
+      setClaimError('Por favor escribe tu nickname de Minecraft para entregarte el objeto.');
+      return;
+    }
+    setClaimError('');
+    setClaimLoading(true);
+    setUnboxingStage('shaking');
+    playMcSfx('totem');
+
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (playerUser?.token) {
+        headers['Authorization'] = `Bearer ${playerUser.token}`;
+      }
+
+      const res = await fetch(`${API_BASE}/api/minecraft/claim-easter-egg`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          rewardId,
+          player: target
+        })
+      });
+
+      const resData = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(resData.error || 'No se pudo entregar el premio');
+      }
+
+      setTimeout(() => {
+        const foundItem = MYSTERY_REWARDS.find((r) => r.id === rewardId);
+        const claimedData = {
+          rewardId,
+          player: target,
+          date: new Date().toISOString(),
+          realName: foundItem.realName,
+          itemId: foundItem.itemId,
+          count: foundItem.count,
+          enchants: foundItem.enchants,
+          lore: foundItem.lore,
+          serverOutput: resData.output || ''
+        };
+        try {
+          localStorage.setItem('mc_claimed_reward', JSON.stringify(claimedData));
+        } catch {}
+        setClaimedReward(claimedData);
+        setUnboxingStage('revealed');
+        setClaimLoading(false);
+        playMcSfx('achievement');
+        startXpRain();
+      }, 1600);
+    } catch (err) {
+      setClaimLoading(false);
+      setUnboxingStage('idle');
+      setClaimError(err.message || 'Error de conexión al reclamar el premio');
+    }
   };
 
   // Konami Code: ↑ ↑ ↓ ↓ ← → ← → B A
@@ -3904,7 +4059,29 @@ const Minecraft = () => {
             {/* Secret Tracker: colecciona los easter eggs */}
             <div className="mc-secrets">
               <div className="mc-secrets-head">
-                🥚 SECRETOS <b>{foundEggs.length}/{SECRET_EGGS.length}</b>
+                <div className="mc-secrets-head-left">
+                  <span>🥚 SECRETOS <b>{foundEggs.length}/{SECRET_EGGS.length}</b></span>
+                  {foundEggs.length === SECRET_EGGS.length && (
+                    <span className="mc-secrets-complete-tag">★ ¡TODOS DESCUBIERTOS! ★</span>
+                  )}
+                </div>
+                {(foundEggs.length === SECRET_EGGS.length || claimedReward || isAdmin) ? (
+                  <button
+                    type="button"
+                    className="mc-btn gold mc-secrets-claim-btn pulse"
+                    onClick={() => {
+                      playMcSfx('pop');
+                      setRewardModalOpen(true);
+                    }}
+                    title="Cámara de Premios Misteriosos"
+                  >
+                    🎁 {claimedReward ? 'Ver Mi Premio Secreto' : '¡Reclamar Premio Secreto!'}
+                  </button>
+                ) : (
+                  <span className="mc-secrets-hint">
+                    🎁 Encuentra los {SECRET_EGGS.length} secretos para abrir la Cámara de Premios
+                  </span>
+                )}
               </div>
               <div className="mc-secrets-grid">
                 {SECRET_EGGS.map((egg) => {
@@ -4205,6 +4382,230 @@ const Minecraft = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================
+          MYSTERY REWARD SELECTION MODAL (COMPLETION PRIZE)
+         ======================================================= */}
+      {rewardModalOpen && (
+        <div className="mc-modal-overlay" onClick={() => !claimLoading && setRewardModalOpen(false)}>
+          <div className="mc-modal-box mc-reward-modal-box" onClick={(e) => e.stopPropagation()}>
+            <div className="mc-modal-header gold">
+              <h3 className="mc-modal-title">
+                <span className="mc-gift-header-icon">🎁</span>
+                <span>CÁMARA DE PREMIOS MISTERIOSOS</span>
+              </h3>
+              <button
+                type="button"
+                className="mc-modal-close"
+                onClick={() => !claimLoading && setRewardModalOpen(false)}
+                aria-label="Cerrar modal"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="mc-modal-body mc-reward-modal-body">
+              {claimedReward ? (
+                /* REWARD ALREADY CLAIMED / REVEALED VIEW */
+                <div className="mc-reward-claimed-view">
+                  <div className="mc-reward-badge-pill">★ RECOMPENSA DESBLOQUEADA ★</div>
+                  <h3 className="mc-reward-claimed-title">¡Has reclamado tu premio de completista!</h3>
+                  <p className="mc-reward-claimed-subtitle">
+                    Entregado al aventurero <strong>{claimedReward.player}</strong>.
+                  </p>
+
+                  <div className="mc-reward-display-showcase">
+                    <div className="mc-reward-item-frame">
+                      <McItemIcon id={claimedReward.itemId} size={64} />
+                      {claimedReward.count > 1 && (
+                        <span className="mc-reward-count-badge">x{claimedReward.count}</span>
+                      )}
+                    </div>
+
+                    {/* Minecraft Authentic Tooltip Box */}
+                    <div className="mc-reward-lore-box">
+                      <div className="mc-reward-real-name">{claimedReward.realName}</div>
+                      {claimedReward.enchants && claimedReward.enchants.length > 0 && (
+                        <div className="mc-reward-enchants">
+                          {claimedReward.enchants.map((enc, idx) => (
+                            <div key={idx} className="mc-reward-enchant-line">✦ {enc}</div>
+                          ))}
+                        </div>
+                      )}
+                      <div className="mc-reward-lore-lines">
+                        {claimedReward.lore.map((line, idx) => (
+                          <div key={idx} className="mc-reward-lore-line">{line}</div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mc-reward-status-banner">
+                    <span>📢 ¡Hazaña anunciada en el chat global del servidor! Revisa tu inventario in-game.</span>
+                  </div>
+
+                  <div className="mc-reward-modal-actions">
+                    <button
+                      type="button"
+                      className="mc-btn emerald"
+                      onClick={() => setRewardModalOpen(false)}
+                    >
+                      Aceptar y Continuar
+                    </button>
+                    {isAdmin && (
+                      <button
+                        type="button"
+                        className="mc-btn red"
+                        style={{ fontSize: '0.72rem' }}
+                        onClick={() => {
+                          if (window.confirm('¿Resetear premio reclamado para probar otra caja? (Función de Admin)')) {
+                            localStorage.removeItem('mc_claimed_reward');
+                            setClaimedReward(null);
+                            setSelectedRewardId(null);
+                            setUnboxingStage('idle');
+                          }
+                        }}
+                      >
+                        🔄 Resetear Recompensa (Admin)
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ) : unboxingStage === 'shaking' ? (
+                /* UNBOXING SUSPENSE ANIMATION */
+                <div className="mc-reward-unboxing-view">
+                  <div className="mc-gift-crate-animating">
+                    <span className="mc-big-gift-icon shake">🎁</span>
+                  </div>
+                  <h3 className="mc-unboxing-title">¡Abriendo la caja misteriosa...!</h3>
+                  <p className="mc-unboxing-desc">
+                    Forjando el artefacto y enviándolo al servidor de Minecraft...
+                  </p>
+                </div>
+              ) : selectedRewardId ? (
+                /* CONFIRMATION & USERNAME PROMPT STEP */
+                (() => {
+                  const box = MYSTERY_REWARDS.find((b) => b.id === selectedRewardId);
+                  return (
+                    <div className="mc-reward-confirm-view">
+                      <div className="mc-confirm-box-badge">
+                        <span className="mc-confirm-gift-icon">🎁</span>
+                        <h4>{box.title}</h4>
+                      </div>
+
+                      <blockquote className="mc-confirm-quote">
+                        {box.boxDesc}
+                      </blockquote>
+
+                      <div className="mc-confirm-warning">
+                        ⚠️ <strong>Atención:</strong> Esta decisión es <u>definitiva</u>. Solo puedes elegir una de las 4 cajas y no podrás cambiarla después.
+                      </div>
+
+                      <div className="mc-confirm-form-group">
+                        <label className="mc-confirm-label">
+                          👤 ¿A qué jugador de Minecraft entregamos el premio?
+                        </label>
+                        <div className="mc-confirm-input-wrap">
+                          {playerUser?.username ? (
+                            <div className="mc-confirm-logged-player">
+                              <img
+                                src={`https://mc-heads.net/avatar/${encodeURIComponent(playerUser.username.replace(/^\./, ''))}/28`}
+                                alt={playerUser.username}
+                                className="mc-confirm-avatar"
+                              />
+                              <input
+                                type="text"
+                                className="mc-confirm-input"
+                                value={claimPlayerName}
+                                onChange={(e) => setClaimPlayerName(e.target.value)}
+                                placeholder="Tu nickname exacto..."
+                              />
+                              <span className="mc-confirm-logged-tag">Sesión iniciada</span>
+                            </div>
+                          ) : (
+                            <input
+                              type="text"
+                              className="mc-confirm-input"
+                              value={claimPlayerName}
+                              onChange={(e) => setClaimPlayerName(e.target.value)}
+                              placeholder="Ej: AntonioJara, Steve..."
+                              autoFocus
+                            />
+                          )}
+                        </div>
+                        <small className="mc-confirm-help">
+                          Escribe tu nick de Minecraft (Java o Bedrock). Si estás dentro del juego, el ítem aparecerá de inmediato en tu mano.
+                        </small>
+                      </div>
+
+                      {claimError && <div className="mc-modal-error">{claimError}</div>}
+
+                      <div className="mc-confirm-actions">
+                        <button
+                          type="button"
+                          className="mc-btn"
+                          disabled={claimLoading}
+                          onClick={() => {
+                            setSelectedRewardId(null);
+                            setClaimError('');
+                          }}
+                        >
+                          ← Volver a elegir
+                        </button>
+                        <button
+                          type="button"
+                          className="mc-btn gold pulse"
+                          disabled={claimLoading || !claimPlayerName.trim()}
+                          onClick={() => handleClaimReward(selectedRewardId)}
+                        >
+                          🎁 ¡ABRIR CAJA Y RECLAMAR!
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()
+              ) : (
+                /* 4 DECEPTIVE MYSTERY CARDS SELECTION (ALL SHOWING 🎁 ICON) */
+                <div className="mc-reward-select-view">
+                  <p className="mc-reward-instructions">
+                    ¡Has descubierto los <strong>{SECRET_EGGS.length} secretos</strong> del servidor! Como recompensa a tu dedicación, puedes elegir uno de estos 4 misteriosos cofres. Las apariencias engañan... elige con el corazón.
+                  </p>
+
+                  <div className="mc-mystery-grid">
+                    {MYSTERY_REWARDS.map((box) => (
+                      <div
+                        key={box.id}
+                        className="mc-mystery-card"
+                        onClick={() => {
+                          playMcSfx('pop');
+                          setSelectedRewardId(box.id);
+                        }}
+                      >
+                        <div className="mc-mystery-card-box">
+                          <span className="mc-mystery-gift-icon">🎁</span>
+                        </div>
+                        <div className="mc-mystery-card-title">{box.title}</div>
+                        <div className="mc-mystery-card-desc">{box.boxDesc}</div>
+                        <button
+                          type="button"
+                          className="mc-btn gold mc-mystery-choose-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            playMcSfx('pop');
+                            setSelectedRewardId(box.id);
+                          }}
+                        >
+                          🎁 Elegir Esta Caja
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
