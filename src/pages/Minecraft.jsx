@@ -3750,6 +3750,7 @@ const Minecraft = () => {
           className={`mc-wall-lever-btn ${leverPulled ? 'pulled' : ''}`}
           onClick={handleWallLeverClick}
           aria-label="Palanca en la pared"
+          title={leverPulled ? 'Palanca activada (clic para alternar dimensión)' : 'Palanca desactivada (clic para alternar dimensión)'}
         >
           <div className={`mc-wall-lever-handle ${leverPulled ? 'down' : 'up'}`}>
             <img
@@ -3759,6 +3760,7 @@ const Minecraft = () => {
               draggable={false}
             />
           </div>
+          <div className="mc-wall-mount-plate" aria-hidden="true" />
         </button>
       </aside>
 

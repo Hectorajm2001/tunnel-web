@@ -1988,7 +1988,7 @@ body:has(.mc-page) .footer {
    ======================================================= */
 .mc-wall-lever-wrap {
   position: fixed;
-  right: 12px;
+  right: 0;
   top: 50%;
   transform: translateY(-50%);
   z-index: 950;
@@ -2004,39 +2004,59 @@ body:has(.mc-page) .footer {
   outline: none;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  position: relative;
   filter: drop-shadow(-3px 4px 6px rgba(0, 0, 0, 0.75));
   transition: filter 0.15s ease, transform 0.1s ease;
 }
 
 .mc-wall-lever-btn:hover {
-  filter: drop-shadow(-4px 5px 8px rgba(0, 0, 0, 0.9)) brightness(1.2);
-  transform: scale(1.1);
+  filter: drop-shadow(-4px 5px 10px rgba(0, 0, 0, 0.9)) brightness(1.2);
 }
 
 .mc-wall-lever-btn:active {
-  transform: scale(1.02);
+  transform: scale(0.97);
 }
 
 .mc-wall-lever-btn:focus-visible {
   outline: 2px dashed #ffff55;
-  outline-offset: 4px;
+  outline-offset: 2px;
 }
 
+/* Slim vertical cobblestone mounting plate anchored flush to the screen edge */
+.mc-wall-mount-plate {
+  width: 9px;
+  height: 40px;
+  background-color: #555555;
+  background-image: url('https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/26.3/assets/minecraft/textures/block/cobblestone.png');
+  background-size: 16px 16px;
+  image-rendering: pixelated;
+  border-left: 2px solid #222222;
+  border-top: 2px solid #444444;
+  border-bottom: 2px solid #111111;
+  border-right: none;
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+  box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.65);
+  flex-shrink: 0;
+}
+
+/* Handle pivots from where it joins the wall plate */
 .mc-wall-lever-handle {
   display: flex;
   align-items: center;
   justify-content: center;
-  transform-origin: bottom center;
-  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.3, 1.2);
+  margin-right: -12px;
+  transform-origin: center 82%;
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.3, 1.25);
 }
 
 .mc-wall-lever-handle.up {
-  transform: rotate(26deg);
+  transform: rotate(-45deg);
 }
 
 .mc-wall-lever-handle.down {
-  transform: rotate(-30deg) translateY(4px);
+  transform: rotate(-135deg);
 }
 
 .mc-wall-lever-img {
@@ -2469,11 +2489,18 @@ body:has(.mc-page) .footer {
 
   /* --- Wall Lever Mobile --- */
   .mc-wall-lever-wrap {
-    right: 6px;
+    right: 0;
+  }
+  .mc-wall-mount-plate {
+    width: 7px;
+    height: 32px;
   }
   .mc-wall-lever-img {
     width: 36px;
     height: 36px;
+  }
+  .mc-wall-lever-handle {
+    margin-right: -10px;
   }
 
   /* --- Server Entry Banner --- */
